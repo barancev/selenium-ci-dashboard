@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>nl.topicus.heroku.wicket</groupId>
-    <artifactId>heroku-wicket-quickstart</artifactId>
+    <groupId>ro.alexo.test</groupId>
+    <artifactId>heroku-simple-web-app</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Heroku Wicket Quick Start</name>
-    <description>Quick Start application demonstrating deployment of a Wicket application to Heroku.</description>
+    <description>Quick Start application demonstrating deployment of a simple web app to Heroku.</description>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -14,7 +14,7 @@
         </license>
     </licenses>
     <properties>
-        <jetty.version>8.1.15.v20140411</jetty.version>
+        <jetty.version>9.2.12.v20150709</jetty.version>
     </properties>
     <dependencies>
         <dependency>
@@ -42,14 +42,13 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JETTY DEPENDENCIES FOR TESTING -->
         <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all-server</artifactId>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
             <version>${jetty.version}</version>
-            <!-- needs to be compile time as we bring our own embedded Jetty -->
             <scope>compile</scope>
         </dependency>
+        
     </dependencies>
     <build>
         <resources>
@@ -94,7 +93,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
             </plugin>
