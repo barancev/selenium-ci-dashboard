@@ -1,5 +1,6 @@
 package ru.stqa.selenium;
 
+import org.eclipse.jetty.quickstart.QuickStartWebApp;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -14,7 +15,8 @@ public class Start {
     Server server = new Server(Integer.valueOf(webPort));
 
     String webappDirLocation = "src/main/webapp/";
-    WebAppContext root = new WebAppContext();
+    QuickStartWebApp root = new QuickStartWebApp();
+    root.setAutoPreconfigure(true);
     root.setContextPath("/");
     root.setDescriptor(webappDirLocation + "/WEB-INF/web.xml");
     root.setResourceBase(webappDirLocation);
