@@ -1,5 +1,6 @@
-# heroku-simple-web-app
-Sample web app for heroku
+# Selenium CI Dashboard
+
+Shows Selenium historical test results
 
 # Run locally
 
