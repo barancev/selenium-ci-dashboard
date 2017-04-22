@@ -1,0 +1,6 @@
+language: java
+
+matrix:
+  include:
+  - env: SOMEVAR=1
+  - env: SOMEVAR=2
