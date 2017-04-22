@@ -57,6 +57,12 @@
       <version>2.8.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.4.194</version>
+    </dependency>
+
     <!-- JUNIT DEPENDENCY FOR TESTING -->
     <dependency>
       <groupId>junit</groupId>
