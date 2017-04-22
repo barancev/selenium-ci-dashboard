@@ -8,3 +8,12 @@ matrix:
   - language: java
     jdk: oraclejdk8
     env: TASK=test_firefox
+
+notifications:
+  webhooks:
+    urls: https://stark-cliffs-78797.herokuapp.com/rest/travis
+    on_success: always # default: always
+    on_failure: always # default: always
+    on_start: always   # default: never
+    on_cancel: always # default: always
+    on_error: always # default: always
