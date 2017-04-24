@@ -101,7 +101,7 @@
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>ru.stqa.selenium</param-value>
+      <param-value>ru.stqa.heroku.selenium</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
     <async-supported>false</async-supported>
@@ -311,7 +311,7 @@
       <secure>false</secure>
       <max-age>-1</max-age>
     </cookie-config>
-    <tracking-mode>COOKIE</tracking-mode>
     <tracking-mode>URL</tracking-mode>
+    <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 </web-app>

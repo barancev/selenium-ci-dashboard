@@ -162,7 +162,7 @@
               <extraJvmArguments>-Xmx512m</extraJvmArguments>
               <programs>
                 <program>
-                  <mainClass>ru.stqa.selenium.Start</mainClass>
+                  <mainClass>ru.stqa.heroku.selenium.Start</mainClass>
                   <name>webapp</name>
                 </program>
               </programs>

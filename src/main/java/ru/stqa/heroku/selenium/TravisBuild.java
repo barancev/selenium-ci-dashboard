@@ -1,4 +1,4 @@
-package ru.stqa.selenium;
+package ru.stqa.heroku.selenium;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

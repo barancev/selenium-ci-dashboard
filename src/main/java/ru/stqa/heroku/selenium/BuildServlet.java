@@ -1,4 +1,4 @@
-package ru.stqa.selenium;
+package ru.stqa.heroku.selenium;
 
 import com.google.gson.Gson;
 
@@ -7,9 +7,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Path("build")
 public class BuildServlet {
