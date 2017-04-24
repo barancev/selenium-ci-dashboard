@@ -20,4 +20,14 @@
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>WebViewServlet</servlet-name>
+    <servlet-class>ru.stqa.selenium.WebViewServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>WebViewServlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
 </module.web-app>

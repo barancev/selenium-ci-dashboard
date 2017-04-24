@@ -12,16 +12,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Path("travis")
 public class TravisServlet {
 
-  private static Logger log = Logger.getLogger("travis");
-
-  private H2Storage h2 = H2Storage.getInstance();
+  private Storage db = Storage.getInstance();
 
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -30,8 +27,8 @@ public class TravisServlet {
     TravisBuild build = jsonToTravisBuild(json);
     List<TravisJob> jobs = jsonToTravisJobs(json);
 
-    h2.store(build);
-    jobs.forEach(j -> h2.store(j));
+    db.store(build);
+    jobs.forEach(j -> db.store(j));
   }
 
   private TravisBuild jsonToTravisBuild(JsonObject json) {
@@ -44,6 +41,11 @@ public class TravisServlet {
       .setFinishedAt(stringOrNull(json.get("finished_at")))
       .setBranch(stringOrNull(json.get("branch")))
       .setCommit(stringOrNull(json.get("commit")))
+      .setCommitMessage(stringOrNull(json.get("message")))
+      .setCommitAuthor(stringOrNull(json.get("author_name")))
+      .setPullRequest(json.get("pull_request").getAsBoolean())
+      .setPullRequestNumber(stringOrNull(json.get("pull_request_number")))
+      .setPullRequestTitle(stringOrNull(json.get("pull_request_title")))
       .build();
   }
 
