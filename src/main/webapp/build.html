@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.css" />
+  </head>
+  <body>
+    <h1>Selenium Travis CI Dashboard</h1>
+    <table id="table-builds">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Number</th>
+          <th>Status</th>
+          <th>Result</th>
+          <th data-dynatable-column="startedAt">Started At</th>
+          <th data-dynatable-column="finishedAt">Finished At</th>
+          <th>OS</th>
+          <th>Language</th>
+          <th>Env</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <script>
+      var queryString = window.location.href.slice(window.location.href.indexOf('?') + 1);
+      var buildId = queryString.slice(queryString.indexOf('=') + 1)
+      $("#table-builds").dynatable({
+        dataset: { ajax: true, ajaxUrl: '/rest/jobs/'+buildId, ajaxOnLoad: true, records: [] },
+        features: { sorting: false }
+      });
+      $('#table-builds').dynatable().on('click', 'tbody tr', function() {
+        window.location = 'job.html?' + $(this).find('td').first().text();
+      });
+    </script>
+  </body>
+</html>

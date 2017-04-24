@@ -106,12 +106,6 @@
     <load-on-startup>1</load-on-startup>
     <async-supported>false</async-supported>
   </servlet>
-  <servlet>
-    <servlet-name>WebViewServlet</servlet-name>
-    <servlet-class>ru.stqa.selenium.WebViewServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-    <async-supported>false</async-supported>
-  </servlet>
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>/</url-pattern>
@@ -130,10 +124,6 @@
   <servlet-mapping>
     <servlet-name>ServiceServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>WebViewServlet</servlet-name>
-    <url-pattern>/*</url-pattern>
   </servlet-mapping>
   <security-constraint>
     <web-resource-collection>

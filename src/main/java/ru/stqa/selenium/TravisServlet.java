@@ -10,7 +10,6 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -22,7 +21,7 @@ public class TravisServlet {
 
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public void doPost(@FormParam("payload") String payload) throws ClassNotFoundException, SQLException {
+  public void doPost(@FormParam("payload") String payload) {
     JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
     TravisBuild build = jsonToTravisBuild(json);
     List<TravisJob> jobs = jsonToTravisJobs(json);
