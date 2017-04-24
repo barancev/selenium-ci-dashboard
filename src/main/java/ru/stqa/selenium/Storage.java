@@ -4,13 +4,18 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Storage {
 
+  private static Logger log = Logger.getLogger("db");
+
   private static Storage singleton;
 
-  public static Storage getInstance() {
+  public synchronized static Storage getInstance() {
     if (singleton == null) {
       singleton = new Storage();
     }
@@ -20,7 +25,24 @@ public class Storage {
   private SessionFactory sessionFactory;
 
   private Storage() {
-    sessionFactory = new Configuration().configure().buildSessionFactory();
+    Configuration configuration = new Configuration().configure();
+    String dbUrl = System.getenv("DATABASE_URL");
+    if (dbUrl != null) {
+      URI dbUri;
+      try {
+        dbUri = new URI(dbUrl);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+
+      String username = dbUri.getUserInfo().split(":")[0];
+      String password = dbUri.getUserInfo().split(":")[1];
+      dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+      configuration.setProperty("hibernate.connection.url", dbUrl);
+      configuration.setProperty("hibernate.connection.username", username);
+      configuration.setProperty("hibernate.connection.password", password);
+    }
+    sessionFactory = configuration.buildSessionFactory();
   }
 
   public void store(TravisBuild build) {
