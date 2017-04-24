@@ -1,12 +1,39 @@
 <html>
   <head>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.84/jsrender.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.css" />
+    <link rel="stylesheet" href="travis.css">
   </head>
   <body>
     <h1>Selenium Travis CI Dashboard</h1>
-    <table id="table-builds">
+    <h2>Build Info</h2>
+    <div id="build-info"></div>
+    <script id="build-info-tmpl" type="text/x-jsrender">
+      <dl>
+        <dt>ID</dt><dd>{{:id}}</dd>
+        <dt>Number</dt><dd>{{:number}}</dd>
+        <dt>Status</dt><dd>{{:status}}</dd>
+        <dt>Result</dt><dd>{{:result}}</dd>
+        <dt>Started At</dt><dd>{{:startedAt}}</dd>
+        <dt>Finished At</dt><dd>{{:finishedAt}}</dd>
+        <dt>Branch</dt><dd>{{:branch}}</dd>
+        <dt>Commit</dt><dd>{{:commit}}</dd>
+        <dt>Commit Message</dt><dd>{{:commitMessage}}</dd>
+        <dt>Commit Author</dt><dd>{{:commitAuthor}}</dd>
+      </dl>
+    </script>
+    <script>
+      var tmpl = $.templates("#build-info-tmpl");
+      var queryString = window.location.href.slice(window.location.href.indexOf("?") + 1);
+      var buildId = queryString.slice(queryString.indexOf("=") + 1)
+      $.getJSON("/rest/build/"+buildId, function(data) {
+        $("#build-info").html(tmpl.render(data));
+      });
+    </script>
+    <h2>Jobs</h2>
+    <table id="table-jobs">
       <thead>
         <tr>
           <th>Id</th>
@@ -24,14 +51,14 @@
       </tbody>
     </table>
     <script>
-      var queryString = window.location.href.slice(window.location.href.indexOf('?') + 1);
-      var buildId = queryString.slice(queryString.indexOf('=') + 1)
-      $("#table-builds").dynatable({
-        dataset: { ajax: true, ajaxUrl: '/rest/jobs/'+buildId, ajaxOnLoad: true, records: [] },
-        features: { sorting: false }
+      var queryString = window.location.href.slice(window.location.href.indexOf("?") + 1);
+      var buildId = queryString.slice(queryString.indexOf("=") + 1)
+      $("#table-jobs").dynatable({
+        dataset: { ajax: true, ajaxUrl: "/rest/jobs/"+buildId, ajaxOnLoad: true, records: [] },
+        features: { paginate: false, recordCount: false }
       });
-      $('#table-builds').dynatable().on('click', 'tbody tr', function() {
-        window.location = 'job.html?' + $(this).find('td').first().text();
+      $("#table-jobs").dynatable().on("click", "tbody tr", function() {
+        window.location = "job.html?id=" + $(this).find("td").first().text();
       });
     </script>
   </body>
