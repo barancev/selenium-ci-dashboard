@@ -72,23 +72,27 @@
       var queryString = window.location.href.slice(window.location.href.indexOf("?") + 1);
       var jobId = queryString.slice(queryString.indexOf("=") + 1);
 
+      var rowWriter = function(id, link, rowIndex, record) {
+        var html = '<li '+(record["id"] == id ? 'class="active"' : "")+'>';
+        html += '<a href="' + link + '?id='+record["id"]+'">';
+        if (record["result"] == 0) {
+          html += '<i class="fa fa-check" aria-hidden="true"></i>'
+        } else if (record["result"] == 1) {
+          html += '<i class="fa fa-times" aria-hidden="true"></i>'
+        } else if (record["result"] == 2) {
+          html += '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>'
+        }
+        html += record["number"] + '</a></li>';
+        return html;
+      };
+
       $.getJSON("/rest/job/"+jobId, function(job) {
         var buildId = job["buildId"];
 
         $("#sidebar-builds").dynatable({
           dataset: { ajax: true, ajaxUrl: '/rest/builds', ajaxOnLoad: true, records: [] },
           writers: { _rowWriter: function(rowIndex, record) {
-              var html = '<li '+(record["id"] == buildId ? 'class="active"' : "")+'>';
-              html += '<a href="/build.html?id='+record["id"]+'">';
-              if (record["result"] == 0) {
-                html += '<i class="fa fa-check" aria-hidden="true"></i>'
-              } else if (record["result"] == 1) {
-                html += '<i class="fa fa-times" aria-hidden="true"></i>'
-              } else if (record["result"] == 2) {
-                html += '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>'
-              }
-              html += record["number"] + '</a></li>';
-              return html;
+            return rowWriter(buildId, "/build.html", rowIndex, record);
           }},
           features: { paginate: false, sort: false, search: false, recordCount: false }
         });
@@ -96,17 +100,7 @@
         $("#sidebar-jobs").dynatable({
           dataset: { ajax: true, ajaxUrl: "/rest/jobs/"+buildId, ajaxOnLoad: true, records: [] },
           writers: { _rowWriter: function(rowIndex, record) {
-            var html = '<li '+(record["id"] == jobId ? 'class="active"' : "")+'>';
-            html += '<a href="/job.html?id='+record["id"]+'">';
-            if (record["result"] == 0) {
-              html += '<i class="fa fa-check" aria-hidden="true"></i>'
-            } else if (record["result"] == 1) {
-              html += '<i class="fa fa-times" aria-hidden="true"></i>'
-            } else if (record["result"] == 2) {
-              html += '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>'
-            }
-            html += record["number"] + '</a></li>';
-            return html;
+            return rowWriter(jobId, "/job.html", rowIndex, record);
           }},
           features: { paginate: false, sort: false, search: false, recordCount: false }
         });

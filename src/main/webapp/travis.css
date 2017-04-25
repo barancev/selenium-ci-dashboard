@@ -41,7 +41,7 @@ h1, h2, h3, h4 {
 }
 
 .sidebar ul li a {
-  width: 80px;
+  width: 90px;
   padding: 0 15px;
   display: block;
   text-decoration: none;
@@ -79,6 +79,11 @@ h1, h2, h3, h4 {
 
 #content {
   margin: 5px 10px;
+}
+
+.dynatable-loaded thead tr th {
+  background-color: #c8c8ff;
+  padding: 0 15px;
 }
 
 .fa {
