@@ -71,6 +71,24 @@ public class Storage {
     }
   }
 
+  public Long store(TestRun testRun) {
+    try (Session session = sessionFactory.openSession()) {
+      session.beginTransaction();
+      if (testRun.getId() != null) {
+        List<TestRun> result = session.createQuery("from TestRun where id=:id", TestRun.class).setParameter("id", testRun.getId()).list();
+        if (result.size() > 0) {
+          session.update(result.get(0).updateFrom(testRun));
+        } else {
+          session.save(testRun);
+        }
+      } else {
+        session.save(testRun);
+      }
+      session.getTransaction().commit();
+      return testRun.getId();
+    }
+  }
+
   public List<TravisBuild> getTravisBuilds() {
     try (Session session = sessionFactory.openSession()) {
       return session.createQuery("from TravisBuild", TravisBuild.class).list();
@@ -94,4 +112,11 @@ public class Storage {
       return session.createQuery("from TravisJob where id=:id", TravisJob.class).setParameter("id", jobId).getSingleResult();
     }
   }
+
+  public List<TestRun> getTestRuns(String jobId) {
+    try (Session session = sessionFactory.openSession()) {
+      return session.createQuery("from TestRun where jobId=:jobId", TestRun.class).setParameter("jobId", jobId).list();
+    }
+  }
+
 }

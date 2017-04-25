@@ -24,6 +24,7 @@
     <!-- Annotated entity classes -->
     <mapping class="ru.stqa.heroku.selenium.TravisBuild"/>
     <mapping class="ru.stqa.heroku.selenium.TravisJob"/>
+    <mapping class="ru.stqa.heroku.selenium.TestRun"/>
 
   </session-factory>
 </hibernate-configuration>
