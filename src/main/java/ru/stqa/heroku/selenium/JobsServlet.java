@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Path("jobs")
-public class JobsServlet {
+public class JobsServlet extends ServletBase {
 
   private Storage db = Storage.getInstance();
 
@@ -22,7 +22,7 @@ public class JobsServlet {
     map.put("records", jobs);
     map.put("queryRecordCount", jobs.size());
     map.put("totalRecordCount", jobs.size());
-    return new Gson().toJson(map);
+    return gson().toJson(map);
   }
 
 }

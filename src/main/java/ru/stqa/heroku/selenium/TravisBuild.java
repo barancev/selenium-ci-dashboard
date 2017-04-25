@@ -3,6 +3,8 @@ package ru.stqa.heroku.selenium;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.Duration;
+import java.time.Instant;
 
 @Entity
 @Table(name = "builds")
@@ -13,8 +15,9 @@ public class TravisBuild {
   private String number;
   private String status;
   private String result;
-  private String startedAt;
-  private String finishedAt;
+  private Instant startedAt;
+  private Instant finishedAt;
+  private Duration duration;
   private String branch;
   private String commit;
   private String commitMessage;
@@ -31,6 +34,7 @@ public class TravisBuild {
     this.result = other.result;
     this.startedAt = other.startedAt;
     this.finishedAt = other.finishedAt;
+    this.duration = other.duration;
     this.branch = other.branch;
     this.commit = other.commit;
     this.commitMessage = other.commitMessage;
@@ -73,20 +77,34 @@ public class TravisBuild {
     this.result = result;
   }
 
-  public String getStartedAt() {
+  public Instant getStartedAt() {
     return startedAt;
   }
 
-  private void setStartedAt(String startedAt) {
+  private void setStartedAt(Instant startedAt) {
     this.startedAt = startedAt;
+    if (startedAt != null && finishedAt != null) {
+      duration = Duration.between(startedAt, finishedAt);
+    } else {
+      duration = null;
+    }
   }
 
-  public String getFinishedAt() {
+  public Instant getFinishedAt() {
     return finishedAt;
   }
 
-  private void setFinishedAt(String finishedAt) {
+  void setFinishedAt(Instant finishedAt) {
     this.finishedAt = finishedAt;
+    if (startedAt != null && finishedAt != null) {
+      duration = Duration.between(startedAt, finishedAt);
+    } else {
+      duration = null;
+    }
+  }
+
+  public Duration getDuration() {
+    return duration;
   }
 
   public String getBranch() {
@@ -173,13 +191,13 @@ public class TravisBuild {
       return this;
     }
 
-    public Builder setStartedAt(String startedAt) {
-      TravisBuild.this.startedAt = startedAt;
+    public Builder setStartedAt(Instant startedAt) {
+      TravisBuild.this.setStartedAt(startedAt);
       return this;
     }
 
-    public Builder setFinishedAt(String finishedAt) {
-      TravisBuild.this.finishedAt = finishedAt;
+    public Builder setFinishedAt(Instant finishedAt) {
+      TravisBuild.this.setFinishedAt(finishedAt);
       return this;
     }
 

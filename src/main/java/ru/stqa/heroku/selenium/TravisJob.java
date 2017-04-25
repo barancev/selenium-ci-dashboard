@@ -3,6 +3,8 @@ package ru.stqa.heroku.selenium;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.Duration;
+import java.time.Instant;
 
 @Entity
 @Table(name = "jobs")
@@ -14,8 +16,9 @@ public class TravisJob {
   private String number;
   private String status;
   private String result;
-  private String startedAt;
-  private String finishedAt;
+  private Instant startedAt;
+  private Instant finishedAt;
+  private Duration duration;
   private String os;
   private String language;
   private String env;
@@ -30,6 +33,7 @@ public class TravisJob {
     this.result = other.result;
     this.startedAt = other.startedAt;
     this.finishedAt = other.finishedAt;
+    this.duration = other.duration;
     this.os = other.os;
     this.language = other.language;
     this.env = other.env;
@@ -77,20 +81,30 @@ public class TravisJob {
     this.result = result;
   }
 
-  public String getStartedAt() {
+  public Instant getStartedAt() {
     return startedAt;
   }
 
-  private void setStartedAt(String startedAt) {
+  private void setStartedAt(Instant startedAt) {
     this.startedAt = startedAt;
+    if (startedAt != null && finishedAt != null) {
+      duration = Duration.between(startedAt, finishedAt);
+    } else {
+      duration = null;
+    }
   }
 
-  public String getFinishedAt() {
+  public Instant getFinishedAt() {
     return finishedAt;
   }
 
-  private void setFinishedAt(String finishedAt) {
+  void setFinishedAt(Instant finishedAt) {
     this.finishedAt = finishedAt;
+    if (startedAt != null && finishedAt != null) {
+      duration = Duration.between(startedAt, finishedAt);
+    } else {
+      duration = null;
+    }
   }
 
   public String getOs() {
@@ -159,13 +173,13 @@ public class TravisJob {
       return this;
     }
 
-    public Builder setStartedAt(String startedAt) {
-      TravisJob.this.startedAt = startedAt;
+    public Builder setStartedAt(Instant startedAt) {
+      TravisJob.this.setStartedAt(startedAt);
       return this;
     }
 
-    public Builder setFinishedAt(String finishedAt) {
-      TravisJob.this.finishedAt = finishedAt;
+    public Builder setFinishedAt(Instant finishedAt) {
+      TravisJob.this.setFinishedAt(finishedAt);
       return this;
     }
 

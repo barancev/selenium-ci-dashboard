@@ -10,6 +10,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -36,8 +37,8 @@ public class TravisServlet {
       .setNumber(json.get("number").getAsString())
       .setStatus(stringOrNull(json.get("status")))
       .setResult(stringOrNull(json.get("result")))
-      .setStartedAt(stringOrNull(json.get("started_at")))
-      .setFinishedAt(stringOrNull(json.get("finished_at")))
+      .setStartedAt(instantOrNull(json.get("started_at")))
+      .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setBranch(stringOrNull(json.get("branch")))
       .setCommit(stringOrNull(json.get("commit")))
       .setCommitMessage(stringOrNull(json.get("message")))
@@ -62,8 +63,8 @@ public class TravisServlet {
       .setNumber(json.get("number").getAsString())
       .setStatus(stringOrNull(json.get("status")))
       .setResult(stringOrNull(json.get("result")))
-      .setStartedAt(stringOrNull(json.get("started_at")))
-      .setFinishedAt(stringOrNull(json.get("finished_at")))
+      .setStartedAt(instantOrNull(json.get("started_at")))
+      .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setOs(stringOrNull(config.get("os")))
       .setLanguage(getLanguage(config))
       .setEnv(getEnv(config))
@@ -73,6 +74,10 @@ public class TravisServlet {
 
   private String stringOrNull(JsonElement json) {
     return json instanceof JsonNull ? null : json.getAsString();
+  }
+
+  private Instant instantOrNull(JsonElement json) {
+    return json instanceof JsonNull ? null : Instant.parse(json.getAsString());
   }
 
   private String getLanguage(JsonObject config) {

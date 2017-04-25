@@ -42,15 +42,16 @@
     </div>
 
     <script id="build-info-tmpl" type="text/x-jsrender">
-      <div id="build-info">
-        <span class="result-{{:result}}"></span>
-        <span class="info">Build #{{:number}}</span>
-        <span class="started">{{:startedAt}}</span>
-        <span class="duration">{{:duration}}</span>
-      </div>
       <div id="commit-info">
-        <span class="branch">{{:branch}}</span>/<span class="commit">{{:commit}}</span>
-        <span class="message">{{:commitMessage}}</span> by <span class="author">{{:commitAuthor}}</span>
+        <i class="fa fa-github" aria-hidden="true"></i>
+        <a href="https://github.com/SeleniumHQ/selenium/commit/{{:commit}}">{{:commitMessage}}</a>
+        <span class="author">by {{:commitAuthor}}</span> in <span class="branch">{{:branch}}</span>
+      </div>
+      <div id="build-info">
+        {{:stateIcon}}
+        <span class="info">Build #{{:number}}</span>
+        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:startedAt}}</span>
+        <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
       </div>
     </script>
 
@@ -58,18 +59,24 @@
       var tmpl = $.templates("#build-info-tmpl");
 
       var queryString = window.location.href.slice(window.location.href.indexOf("?") + 1);
-      var buildId = queryString.slice(queryString.indexOf("=") + 1)
+      var buildId = queryString.slice(queryString.indexOf("=") + 1);
+
+      var stateIcon = function(state) {
+        if (state == 0) {
+          return '<i class="fa fa-check" aria-hidden="true"></i>';
+        } else if (state == 1) {
+          return '<i class="fa fa-times" aria-hidden="true"></i>';
+        } else if (state == undefined) {
+          return '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>';
+        } else {
+          return '<i class="fa fa-question-circle-o" aria-hidden="true" alt="'+state+'"></i>';
+        }
+      };
 
       var rowWriter = function(id, link, rowIndex, record) {
         var html = '<li '+(record["id"] == id ? 'class="active"' : "")+'>';
         html += '<a href="' + link + '?id='+record["id"]+'">';
-        if (record["result"] == 0) {
-          html += '<i class="fa fa-check" aria-hidden="true"></i>'
-        } else if (record["result"] == 1) {
-          html += '<i class="fa fa-times" aria-hidden="true"></i>'
-        } else if (record["result"] == 2) {
-          html += '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>'
-        }
+        html += stateIcon(record["result"]);
         html += record["number"] + '</a></li>';
         return html;
       };
@@ -83,6 +90,7 @@
       });
 
       $.getJSON("/rest/build/"+buildId, function(data) {
+        data["stateIcon"] = stateIcon(data["result"]);
         $("#build-info").html(tmpl.render(data));
       });
 
