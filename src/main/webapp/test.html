@@ -51,37 +51,37 @@
 
     <script id="job-info-tmpl" type="text/x-jsrender">
       <div id="job-info">
-        {{:stateIcon}}<span class="info">Job #{{:number}}</span>
+        {{:stateIcon}}<span class="info"><a href="/job.html?id={{:id}}">Job #{{:number}}</a></span>
         <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:started}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
       </div>
     </script>
 
     <script id="table-tests-tmpl" type="text/x-jsrender">
+      <h2 title="{{:testClass}}">{{:collapsedTestClass}}</h2>
       <table>
         <thead>
         <tr>
-          <th>Test Class</th>
-          <th>Passed</th>
-          <th>Failed</th>
-          <th>Skipped</th>
-          <th>Total</th>
+          <th>Test Method</th>
+          <th>State</th>
+          <th>Age</th>
+          <th>Duration</th>
         </tr>
         </thead>
         <tbody>{{for records}}
-          <tr test-class="{{:name}}">
-            <td class="info" title="{{:name}}">{{:collapsedName}}</td>
-            <td class="passed">{{:passed}}</td>
-            <td class="failed">{{:failed}}</td>
-            <td class="skipped">{{:skipped}}</td>
-            <td class="total">{{:total}}</td>
+          <tr test-case="{{:name}}">
+            <td class="info">{{:name}}</td>
+            <td class="state">{{:stateIcon}}</td>
+            <td class="age">{{:age}}</td>
+            <td class="duration">{{:duration}}</td>
           </tr>
         {{/for}}</tbody>
       </table>
     </script>
 
     <script>
-      var jobId = getParameterByName("id");
+      var jobId = getParameterByName("jobId");
+      var testClass = getParameterByName("testClass");
 
       $.getJSON("/rest/job/"+jobId, function(job) {
         var buildId = job["buildId"];
@@ -116,7 +116,7 @@
       });
 
       var testTableTmpl = $.templates("#table-tests-tmpl");
-      $.getJSON("/rest/tests/"+jobId, function(data) {
+      $.getJSON("/rest/tests/"+jobId+"/"+testClass, function(data) {
         data["records"].forEach(function(test) {
           test["stateIcon"] = stateIcon(test["state"]);
         });
@@ -124,7 +124,7 @@
       });
 
       $("#table-tests").on("click", "tbody tr", function() {
-        window.location = "test.html?jobId=" + jobId + "&testClass=" + $(this).attr("test-class");
+        //window.location = "test.html?jobId=" + jobId + "&testClass=" + $(this).attr("test-class");
       });
     </script>
   </body>

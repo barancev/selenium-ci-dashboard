@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -31,8 +32,8 @@ public class TestRunServlet {
       .setTestClass(stringOrNull(json.get("testclass")))
       .setTestCase(json.get("testcase").getAsString())
       .setResult(stringOrNull(json.get("result")))
-      .setStartedAt(stringOrNull(json.get("started_at")))
-      .setFinishedAt(stringOrNull(json.get("finished_at")))
+      .setStartedAt(instantOrNull(json.get("started_at")))
+      .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setStacktrace(stringOrNull(json.get("stacktrace")))
       .build();
   }
@@ -43,6 +44,10 @@ public class TestRunServlet {
 
   private Long numberOrNull(JsonElement json) {
     return json == null || json instanceof JsonNull ? null : json.getAsLong();
+  }
+
+  private Instant instantOrNull(JsonElement json) {
+    return json == null || json instanceof JsonNull ? null : Instant.ofEpochMilli(json.getAsLong());
   }
 
 }

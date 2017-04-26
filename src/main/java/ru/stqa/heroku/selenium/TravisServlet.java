@@ -73,11 +73,11 @@ public class TravisServlet {
   }
 
   private String stringOrNull(JsonElement json) {
-    return json instanceof JsonNull ? null : json.getAsString();
+    return json == null || json instanceof JsonNull ? null : json.getAsString();
   }
 
   private Instant instantOrNull(JsonElement json) {
-    return json instanceof JsonNull ? null : Instant.parse(json.getAsString());
+    return json == null || json instanceof JsonNull ? null : Instant.parse(json.getAsString());
   }
 
   private String getLanguage(JsonObject config) {

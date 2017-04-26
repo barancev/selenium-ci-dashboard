@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Path("tests")
-public class TestsServlet {
+public class TestsServlet extends ServletBase {
 
   private Storage db = Storage.getInstance();
 
@@ -24,9 +24,19 @@ public class TestsServlet {
     List<TestClass> jobs = db.getTestClasses(jobId);
     Map<String, Object> map = new HashMap<>();
     map.put("records", jobs.stream().map(TestClass::toJsonMap).collect(Collectors.toList()));
-    map.put("queryRecordCount", jobs.size());
-    map.put("totalRecordCount", jobs.size());
-    return new Gson().toJson(map);
+    return gson().toJson(map);
+  }
+
+  @GET
+  @Path("{id}/{testClass}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String doGet(@PathParam("id") String jobId, @PathParam("testClass") String testClass) {
+    List<TestRun> testCases = db.getTestCases(jobId, testClass);
+    Map<String, Object> map = new HashMap<>();
+    map.put("records", testCases.stream().map(TestRun::toJsonMap).collect(Collectors.toList()));
+    map.put("testClass", testClass);
+    map.put("collapsedTestClass", TestClass.collapse(testClass));
+    return gson().toJson(map);
   }
 
 }

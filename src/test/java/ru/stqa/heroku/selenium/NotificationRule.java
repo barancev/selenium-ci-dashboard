@@ -28,13 +28,13 @@ public class NotificationRule extends TestWatcher {
   protected void starting(Description description) {
     super.starting(description);
     if (notificationUrl != null && jobId != null) {
-      Map<String, String> map = new HashMap<>();
+      Map<String, Object> map = new HashMap<>();
       map.put("name", description.getDisplayName());
       map.put("testclass", description.getClassName());
       map.put("testcase", description.getMethodName());
       map.put("job_id", jobId);
       startedAt = System.currentTimeMillis();
-      map.put("started_at", "" + startedAt);
+      map.put("started_at", startedAt);
       id = notify(map, notificationUrl);
     }
   }
@@ -43,14 +43,14 @@ public class NotificationRule extends TestWatcher {
   protected void succeeded(Description description) {
     long finishedAt = System.currentTimeMillis();
     if (id != null && notificationUrl != null && jobId != null) {
-      Map<String, String> map = new HashMap<>();
-      map.put("id", "" + id);
+      Map<String, Object> map = new HashMap<>();
+      map.put("id", id);
       map.put("testclass", description.getClassName());
       map.put("testcase", description.getMethodName());
       map.put("job_id", jobId);
       map.put("result", "passed");
-      map.put("started_at", "" + startedAt);
-      map.put("finished_at", "" + finishedAt);
+      map.put("started_at", startedAt);
+      map.put("finished_at", finishedAt);
       notify(map, notificationUrl);
     }
     super.succeeded(description);
@@ -60,15 +60,15 @@ public class NotificationRule extends TestWatcher {
   protected void failed(Throwable e, Description description) {
     long finishedAt = System.currentTimeMillis();
     if (id != null && notificationUrl != null && jobId != null) {
-      Map<String, String> map = new HashMap<>();
-      map.put("id", "" + id);
+      Map<String, Object> map = new HashMap<>();
+      map.put("id", id);
       map.put("testclass", description.getClassName());
       map.put("testcase", description.getMethodName());
       map.put("job_id", jobId);
       map.put("result", "failed");
       map.put("stacktrace", stacktraceToString(e));
-      map.put("started_at", "" + startedAt);
-      map.put("finished_at", "" + finishedAt);
+      map.put("started_at", startedAt);
+      map.put("finished_at", finishedAt);
       notify(map, notificationUrl);
     }
     super.succeeded(description);
@@ -78,15 +78,15 @@ public class NotificationRule extends TestWatcher {
   protected void skipped(AssumptionViolatedException e, Description description) {
     long finishedAt = System.currentTimeMillis();
     if (id != null && notificationUrl != null && jobId != null) {
-      Map<String, String> map = new HashMap<>();
-      map.put("id", "" + id);
+      Map<String, Object> map = new HashMap<>();
+      map.put("id", id);
       map.put("testclass", description.getClassName());
       map.put("testcase", description.getMethodName());
       map.put("job_id", jobId);
       map.put("result", "skipped");
       map.put("stacktrace", stacktraceToString(e));
-      map.put("started_at", "" + startedAt);
-      map.put("finished_at", "" + finishedAt);
+      map.put("started_at", startedAt);
+      map.put("finished_at", finishedAt);
       notify(map, notificationUrl);
     }
     super.succeeded(description);
@@ -99,7 +99,7 @@ public class NotificationRule extends TestWatcher {
     return sw.toString();
   }
 
-  private Long notify(Map<String, String> map, String notificationUrl) {
+  private Long notify(Map<String, Object> map, String notificationUrl) {
     try {
       CloseableHttpClient httpclient = HttpClients.createDefault();
       HttpPost httpPost = new HttpPost(notificationUrl);

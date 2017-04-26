@@ -22,8 +22,8 @@ public class TestClass {
     return name;
   }
 
-  public String getCollapsedName() {
-    return Arrays.stream(name.split("\\."))
+  public static String collapse(String fullName) {
+    return Arrays.stream(fullName.split("\\."))
       .reduce(new ArrayList<String>(),
         (list, element) -> {
           if (list.size() > 0) list.set(list.size()-1, list.get(list.size()-1).substring(0,1));
@@ -52,7 +52,7 @@ public class TestClass {
   public Map<String, Object> toJsonMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("name", getName());
-    map.put("collapsedName", getCollapsedName());
+    map.put("collapsedName", collapse(getName()));
     map.put("passed", passed > 0 ? passed : "");
     map.put("failed", failed > 0 ? failed : "");
     map.put("skipped", skipped > 0 ? skipped : "");

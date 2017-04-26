@@ -6,6 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "tests")
@@ -18,8 +22,8 @@ public class TestRun {
   private String testCase;
   private String jobId;
   private String result;
-  private String startedAt;
-  private String finishedAt;
+  private Instant startedAt;
+  private Instant finishedAt;
   @Type(type="text")
   private String stacktrace;
 
@@ -77,19 +81,19 @@ public class TestRun {
     this.result = result;
   }
 
-  public String getStartedAt() {
+  public Instant getStartedAt() {
     return startedAt;
   }
 
-  private void setStartedAt(String startedAt) {
+  private void setStartedAt(Instant startedAt) {
     this.startedAt = startedAt;
   }
 
-  public String getFinishedAt() {
+  public Instant getFinishedAt() {
     return finishedAt;
   }
 
-  private void setFinishedAt(String finishedAt) {
+  private void setFinishedAt(Instant finishedAt) {
     this.finishedAt = finishedAt;
   }
 
@@ -99,6 +103,30 @@ public class TestRun {
 
   private void setStacktrace(String stacktrace) {
     this.stacktrace = stacktrace;
+  }
+
+  public Map<String, Object> toJsonMap() {
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", getTestCase());
+    if (getStartedAt() != null) {
+      map.put("started", getStartedAt());
+      if (getFinishedAt() != null) {
+        map.put("finished", getFinishedAt());
+        map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
+        map.put("state", getResult());
+      } else {
+        map.put("finished", "-");
+        map.put("duration", Duration.between(getStartedAt(), Instant.now()));
+        map.put("state", "running");
+        //map.put("state", "cancelled");
+      }
+    } else {
+      map.put("started", "-");
+      map.put("finished", "-");
+      map.put("duration", "-");
+      map.put("state", "pending");
+    }
+    return map;
   }
 
   public static Builder newBuilder() {
@@ -134,12 +162,12 @@ public class TestRun {
       return this;
     }
 
-    public Builder setStartedAt(String startedAt) {
+    public Builder setStartedAt(Instant startedAt) {
       TestRun.this.startedAt = startedAt;
       return this;
     }
 
-    public Builder setFinishedAt(String finishedAt) {
+    public Builder setFinishedAt(Instant finishedAt) {
       TestRun.this.finishedAt = finishedAt;
       return this;
     }

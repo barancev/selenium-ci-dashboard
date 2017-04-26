@@ -128,11 +128,7 @@ public class Storage {
       List<TestRun> testRuns = session.createQuery("from TestRun where jobId=:jobId", TestRun.class).setParameter("jobId", jobId).list();
       Map<String, TestClass> testClasses = new HashMap<>();
       for (TestRun testRun : testRuns) {
-        TestClass testClass = testClasses.get(testRun.getTestClass());
-        if (testClass ==  null) {
-          testClass = new TestClass(testRun.getTestClass());
-          testClasses.put(testRun.getTestClass(), testClass);
-        }
+        TestClass testClass = testClasses.computeIfAbsent(testRun.getTestClass(), k -> new TestClass(testRun.getTestClass()));
         if (testRun.getFinishedAt() ==  null) {
           testClass.incRunning();
         } else {
@@ -154,6 +150,15 @@ public class Storage {
       List<TestClass> list = Lists.newArrayList(testClasses.values());
       list.sort(Comparator.comparing(TestClass::getName));
       return list;
+    }
+  }
+
+  public List<TestRun> getTestCases(String jobId, String testClass) {
+    try (Session session = sessionFactory.openSession()) {
+      List<TestRun> testRuns = session.createQuery("from TestRun where jobId=:jobId and testClass=:testClass", TestRun.class)
+        .setParameter("jobId", jobId).setParameter("testClass", testClass).list();
+      testRuns.sort(Comparator.comparing(TestRun::getTestCase));
+      return testRuns;
     }
   }
 
