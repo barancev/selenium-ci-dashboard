@@ -19,7 +19,7 @@ public class FirstTest {
 
   @Test
   public void badTest() {
-    assertThat(2*2, is(4));
+    assertThat(2*2, is(5));
   }
 
 }

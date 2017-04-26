@@ -1,5 +1,7 @@
 package ru.stqa.heroku.selenium;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,6 +20,7 @@ public class TestRun {
   private String result;
   private String startedAt;
   private String finishedAt;
+  @Type(type="text")
   private String stacktrace;
 
   TestRun() {}

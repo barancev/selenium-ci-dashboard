@@ -19,7 +19,7 @@
     <property name="show_sql">true</property>
 
     <!-- Drop and re-create all database on startup -->
-    <property name="hibernate.hbm2ddl.auto">validate</property>
+    <property name="hibernate.hbm2ddl.auto">verify</property>
 
     <!-- Annotated entity classes -->
     <mapping class="ru.stqa.heroku.selenium.TravisBuild"/>

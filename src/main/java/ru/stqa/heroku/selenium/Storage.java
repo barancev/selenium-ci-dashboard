@@ -1,12 +1,16 @@
 package ru.stqa.heroku.selenium;
 
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class Storage {
@@ -116,6 +120,40 @@ public class Storage {
   public List<TestRun> getTestRuns(String jobId) {
     try (Session session = sessionFactory.openSession()) {
       return session.createQuery("from TestRun where jobId=:jobId", TestRun.class).setParameter("jobId", jobId).list();
+    }
+  }
+
+  public List<TestClass> getTestClasses(String jobId) {
+    try (Session session = sessionFactory.openSession()) {
+      List<TestRun> testRuns = session.createQuery("from TestRun where jobId=:jobId", TestRun.class).setParameter("jobId", jobId).list();
+      Map<String, TestClass> testClasses = new HashMap<>();
+      for (TestRun testRun : testRuns) {
+        TestClass testClass = testClasses.get(testRun.getTestClass());
+        if (testClass ==  null) {
+          testClass = new TestClass(testRun.getTestClass());
+          testClasses.put(testRun.getTestClass(), testClass);
+        }
+        if (testRun.getFinishedAt() ==  null) {
+          testClass.incRunning();
+        } else {
+          switch (testRun.getResult()) {
+            case "passed":
+              testClass.incPassed();
+              break;
+            case "failed":
+              testClass.incFailed();
+              break;
+            case "skipped":
+              testClass.incSkipped();
+              break;
+            default:
+              log.info("Unknown test case result " + testRun.getResult());
+          }
+        }
+      }
+      List<TestClass> list = Lists.newArrayList(testClasses.values());
+      list.sort(Comparator.comparing(TestClass::getName));
+      return list;
     }
   }
 

@@ -20,7 +20,7 @@ public class TestsServlet {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String jobId) {
-    List<TestRun> jobs = db.getTestRuns(jobId);
+    List<TestClass> jobs = db.getTestClasses(jobId);
     Map<String, Object> map = new HashMap<>();
     map.put("records", jobs);
     map.put("queryRecordCount", jobs.size());

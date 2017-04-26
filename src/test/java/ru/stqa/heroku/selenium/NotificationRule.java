@@ -48,7 +48,7 @@ public class NotificationRule extends TestWatcher {
       map.put("testclass", description.getClassName());
       map.put("testcase", description.getMethodName());
       map.put("job_id", jobId);
-      map.put("result", "succeeded");
+      map.put("result", "passed");
       map.put("started_at", "" + startedAt);
       map.put("finished_at", "" + finishedAt);
       notify(map, notificationUrl);
