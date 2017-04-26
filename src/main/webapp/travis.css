@@ -11,6 +11,23 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
+table {
+  margin: 5px;
+}
+
+table thead tr th {
+  background-color: #c8c8ff;
+  padding: 2px 5px;
+  text-align: left;
+}
+
+table tbody tr td {
+  margin: 5px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-right: 25px;
+  cursor: pointer;
+}
+
 #header {
   background-color: #e0e0e0;
   position: relative;
@@ -78,12 +95,17 @@ h1, h2, h3, h4 {
 }
 
 #content {
-  margin: 5px 10px;
+  margin: 5px;
 }
 
-.dynatable-loaded thead tr th {
-  background-color: #c8c8ff;
-  padding: 0 15px;
+#metadata {
+  margin: 7px;
+  padding: 5px;
+  border: 1px solid #e0e0e0;
+}
+
+#table-jobs {
+
 }
 
 .fa {
