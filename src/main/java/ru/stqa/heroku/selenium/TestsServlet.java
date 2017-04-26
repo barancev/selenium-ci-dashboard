@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Path("tests")
 public class TestsServlet {
@@ -22,7 +23,7 @@ public class TestsServlet {
   public String doGet(@PathParam("id") String jobId) {
     List<TestClass> jobs = db.getTestClasses(jobId);
     Map<String, Object> map = new HashMap<>();
-    map.put("records", jobs);
+    map.put("records", jobs.stream().map(TestClass::toJsonMap).collect(Collectors.toList()));
     map.put("queryRecordCount", jobs.size());
     map.put("totalRecordCount", jobs.size());
     return new Gson().toJson(map);

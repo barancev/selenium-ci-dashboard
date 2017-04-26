@@ -69,8 +69,8 @@
         </tr>
         </thead>
         <tbody>{{for records}}
-          <tr test-id="{{:id}}">
-            <td class="info">{{:name}}</td>
+          <tr test-class="{{:name}}">
+            <td class="info" title="{{:name}}">{{:collapsedName}}</td>
             <td class="passed">{{:passed}}</td>
             <td class="failed">{{:failed}}</td>
             <td class="skipped">{{:skipped}}</td>
@@ -125,7 +125,7 @@
       });
 
       $("#table-tests").on("click", "tbody tr", function() {
-        window.location = "test.html?id=" + $(this).attr("test-id");
+        window.location = "test.html?jobId=" + jobId + "&testClass=" + $(this).attr("test-class");
       });
     </script>
   </body>

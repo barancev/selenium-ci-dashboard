@@ -38,6 +38,10 @@ table tbody tr td {
   padding: 10px 0;
 }
 
+#header h1 a {
+  text-decoration: none;
+}
+
 #body {
   display: flex;
 }
@@ -86,14 +90,6 @@ table tbody tr td {
   background-color: #d8d8ff;
 }
 
-#sidebar-builds {
-
-}
-
-#sidebar-jobs {
-
-}
-
 #content {
   margin: 5px;
 }
@@ -104,8 +100,12 @@ table tbody tr td {
   border: 1px solid #e0e0e0;
 }
 
-#table-jobs {
+#table-tests .passed {
+  color: green;
+}
 
+#table-tests .failed {
+  color: red;
 }
 
 .fa {
