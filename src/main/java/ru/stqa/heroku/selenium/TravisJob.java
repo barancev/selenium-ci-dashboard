@@ -132,6 +132,7 @@ public class TravisJob {
   public Map<String, Object> toJsonMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("id", getId());
+    map.put("buildId", getBuildId());
     map.put("number", getNumber());
     if (getStartedAt() != null) {
       map.put("started", getStartedAt());

@@ -2,9 +2,8 @@
   <head>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.84/jsrender.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.js"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.css" />
     <script src="//use.fontawesome.com/c938e2358b.js"></script>
+    <script src="travis.js"></script>
     <link rel="stylesheet" href="travis.css" />
   </head>
   <body>
@@ -12,37 +11,30 @@
       <h1><a href="/">Selenium Travis CI Dashboard</a></h1>
     </div>
     <div id="body">
-      <div id="sidebar1" class="sidebar">
-        <h2>Builds</h2>
-        <ul id="sidebar-builds">
-        </ul>
-      </div>
-      <div id="sidebar2" class="sidebar">
-        <h2>Jobs</h2>
-        <ul id="sidebar-jobs">
-        </ul>
-      </div>
+      <div id="sidebar1" class="sidebar"></div>
+      <div id="sidebar2" class="sidebar"></div>
       <div id="content">
-        <div id="build-info"></div>
-        <div id="job-info"></div>
-        <div id="tables">
-          <table id="table-tests">
-            <thead>
-            <tr>
-              <th>Id</th>
-              <th data-dynatable-column="testClass">Test Class</th>
-              <th data-dynatable-column="testCase">Test Case</th>
-              <th>Result</th>
-              <th data-dynatable-column="startedAt">Started At</th>
-              <th data-dynatable-column="finishedAt">Finished At</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+        <div id="metadata">
+          <div id="build-metadata"></div>
+          <div id="job-metadata"></div>
         </div>
+        <div id="table-tests"></div>
       </div>
     </div>
+
+    <script id="sidebar-builds-tmpl" type="text/x-jsrender">
+      <h2>Builds</h2>
+      <ul id="sidebar-builds">{{for records}}
+        <li class="{{:active}}"><a href="/build.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
+      {{/for}}</ul>
+    </script>
+
+    <script id="sidebar-jobs-tmpl" type="text/x-jsrender">
+      <h2>Jobs</h2>
+      <ul id="sidebar-jobs">{{for records}}
+        <li class="{{:active}}"><a href="/job.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
+      {{/for}}</ul>
+    </script>
 
     <script id="build-info-tmpl" type="text/x-jsrender">
       <div id="commit-info">
@@ -52,79 +44,88 @@
       </div>
       <div id="build-info">
         {{:stateIcon}}<span class="info">Build #{{:number}}</span>
-        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:startedAt}}</span>
+        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:started}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
       </div>
     </script>
+
     <script id="job-info-tmpl" type="text/x-jsrender">
       <div id="job-info">
         {{:stateIcon}}<span class="info">Job #{{:number}}</span>
-        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:startedAt}}</span>
+        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:started}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
       </div>
     </script>
 
-    <script>
-      var jobTmpl = $.templates("#job-info-tmpl");
-      var buildTmpl = $.templates("#build-info-tmpl");
+    <script id="table-tests-tmpl" type="text/x-jsrender">
+      <table>
+        <thead>
+        <tr>
+          <th>Test Class</th>
+          <th>Passed</th>
+          <th>Failed</th>
+          <th>Skipped</th>
+          <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>{{for records}}
+          <tr test-id="{{:id}}">
+            <td class="info">{{:stateIcon}}{{:name}}</td>
+            <td class="passed">{{:passed}}</td>
+            <td class="failed">{{:failed}}</td>
+            <td class="skipped">{{:skipped}}</td>
+            <td class="total">{{:total}}</td>
+          </tr>
+        {{/for}}</tbody>
+      </table>
+    </script>
 
+    <script>
       var queryString = window.location.href.slice(window.location.href.indexOf("?") + 1);
       var jobId = queryString.slice(queryString.indexOf("=") + 1);
-
-      var stateIcon = function(state) {
-        if (state == 0) {
-          return '<i class="fa fa-check" aria-hidden="true"></i>';
-        } else if (state == 1) {
-          return '<i class="fa fa-times" aria-hidden="true"></i>';
-        } else if (state == undefined) {
-          return '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>';
-        } else {
-          return '<i class="fa fa-question-circle-o" aria-hidden="true" alt="'+state+'"></i>';
-        }
-      };
-
-      var rowWriter = function(id, link, rowIndex, record) {
-        var html = '<li '+(record["id"] == id ? 'class="active"' : "")+'>';
-        html += '<a href="' + link + '?id='+record["id"]+'">';
-        html += stateIcon(record["result"]);
-        html += record["number"] + '</a></li>';
-        return html;
-      };
 
       $.getJSON("/rest/job/"+jobId, function(job) {
         var buildId = job["buildId"];
 
-        $("#sidebar-builds").dynatable({
-          dataset: { ajax: true, ajaxUrl: '/rest/builds', ajaxOnLoad: true, records: [] },
-          writers: { _rowWriter: function(rowIndex, record) {
-            return rowWriter(buildId, "/build.html", rowIndex, record);
-          }},
-          features: { paginate: false, sort: false, search: false, recordCount: false }
+        var sidebarBuildsTmpl = $.templates("#sidebar-builds-tmpl");
+        $.getJSON("/rest/builds", function(data) {
+          data["records"].forEach(function(build) {
+            build["stateIcon"] = stateIcon(build["state"]);
+            build["active"] = build["id"] == buildId ? "active" : "";
+          });
+          $("#sidebar1").html(sidebarBuildsTmpl.render(data));
         });
 
-        $("#sidebar-jobs").dynatable({
-          dataset: { ajax: true, ajaxUrl: "/rest/jobs/"+buildId, ajaxOnLoad: true, records: [] },
-          writers: { _rowWriter: function(rowIndex, record) {
-            return rowWriter(jobId, "/job.html", rowIndex, record);
-          }},
-          features: { paginate: false, sort: false, search: false, recordCount: false }
+        var sidebarJobsTmpl = $.templates("#sidebar-jobs-tmpl");
+        $.getJSON("/rest/jobs/"+buildId, function(data) {
+          data["records"].forEach(function(job) {
+            job["stateIcon"] = stateIcon(job["state"]);
+            job["active"] = job["id"] == jobId ? "active" : "";
+          });
+          $("#sidebar2").html(sidebarJobsTmpl.render(data));
         });
 
+        var buildTmpl = $.templates("#build-info-tmpl");
         $.getJSON("/rest/build/"+buildId, function(build) {
-          build["stateIcon"] = stateIcon(build["result"]);
-          $("#build-info").html(buildTmpl.render(build));
+          build["stateIcon"] = stateIcon(build["state"]);
+          $("#build-metadata").html(buildTmpl.render(build));
         });
 
-        job["stateIcon"] = stateIcon(job["result"]);
-        $("#job-info").html(jobTmpl.render(job));
+        var jobTmpl = $.templates("#job-info-tmpl");
+        job["stateIcon"] = stateIcon(job["state"]);
+        $("#job-metadata").html(jobTmpl.render(job));
       });
 
-      $("#table-tests").dynatable({
-        dataset: { ajax: true, ajaxUrl: "/rest/tests/"+jobId, ajaxOnLoad: true, records: [] },
-        features: { paginate: false, search: false, recordCount: false }
+      var testTableTmpl = $.templates("#table-tests-tmpl");
+      $.getJSON("/rest/tests/"+jobId, function(data) {
+        data["records"].forEach(function(test) {
+          test["stateIcon"] = stateIcon(test["state"]);
+        });
+        $("#table-tests").html(testTableTmpl.render(data));
       });
-      $("#table-tests").dynatable().on("click", "tbody tr", function() {
-        window.location = "test.html?id=" + $(this).find("td").first().text();
+
+      $("#table-tests").on("click", "tbody tr", function() {
+        window.location = "test.html?id=" + $(this).attr("test-id");
       });
     </script>
   </body>
