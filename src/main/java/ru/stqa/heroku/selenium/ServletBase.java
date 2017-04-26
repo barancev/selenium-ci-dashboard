@@ -6,13 +6,18 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 public class ServletBase {
 
   public static class InstantSerializer implements JsonSerializer<Instant> {
     @Override
     public JsonElement serialize(Instant instant, Type type, JsonSerializationContext jsonSerializationContext) {
-      return new JsonPrimitive(instant.toString());
+      return new JsonPrimitive(
+        DateTimeFormatter.ofPattern("MMM dd, HH:mm:ss").withLocale(Locale.UK).withZone(ZoneId.of("UTC")).format(instant));
     }
   }
 

@@ -5,6 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "jobs")
@@ -18,7 +20,6 @@ public class TravisJob {
   private String result;
   private Instant startedAt;
   private Instant finishedAt;
-  private Duration duration;
   private String os;
   private String language;
   private String env;
@@ -33,7 +34,6 @@ public class TravisJob {
     this.result = other.result;
     this.startedAt = other.startedAt;
     this.finishedAt = other.finishedAt;
-    this.duration = other.duration;
     this.os = other.os;
     this.language = other.language;
     this.env = other.env;
@@ -87,11 +87,6 @@ public class TravisJob {
 
   private void setStartedAt(Instant startedAt) {
     this.startedAt = startedAt;
-    if (startedAt != null && finishedAt != null) {
-      duration = Duration.between(startedAt, finishedAt);
-    } else {
-      duration = null;
-    }
   }
 
   public Instant getFinishedAt() {
@@ -100,11 +95,6 @@ public class TravisJob {
 
   void setFinishedAt(Instant finishedAt) {
     this.finishedAt = finishedAt;
-    if (startedAt != null && finishedAt != null) {
-      duration = Duration.between(startedAt, finishedAt);
-    } else {
-      duration = null;
-    }
   }
 
   public String getOs() {
@@ -137,6 +127,39 @@ public class TravisJob {
 
   private void setAllowFailure(boolean allowFailure) {
     this.allowFailure = allowFailure;
+  }
+
+  public Map<String, Object> toJsonMap() {
+    Map<String, Object> map = new HashMap<>();
+    map.put("id", getId());
+    map.put("number", getNumber());
+    if (getStartedAt() != null) {
+      map.put("started", getStartedAt());
+      if (getFinishedAt() != null) {
+        map.put("finished", getFinishedAt());
+        map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
+        if ("0".equals(getResult())) {
+          map.put("state", "passed");
+        } else {
+          map.put("state", "failed");
+        }
+        //map.put("state", "skipped");
+      } else {
+        map.put("finished", "-");
+        map.put("duration", Duration.between(getStartedAt(), Instant.now()));
+        map.put("state", "running");
+        //map.put("state", "cancelled");
+      }
+    } else {
+      map.put("started", "-");
+      map.put("finished", "-");
+      map.put("duration", "-");
+      map.put("state", "pending");
+    }
+    map.put("os", getOs());
+    map.put("language", getLanguage());
+    map.put("env", getEnv());
+    return map;
   }
 
   public static Builder newBuilder() {
@@ -174,12 +197,12 @@ public class TravisJob {
     }
 
     public Builder setStartedAt(Instant startedAt) {
-      TravisJob.this.setStartedAt(startedAt);
+      TravisJob.this.startedAt = startedAt;
       return this;
     }
 
     public Builder setFinishedAt(Instant finishedAt) {
-      TravisJob.this.setFinishedAt(finishedAt);
+      TravisJob.this.finishedAt = finishedAt;
       return this;
     }
 

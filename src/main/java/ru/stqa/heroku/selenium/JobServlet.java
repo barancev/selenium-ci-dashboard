@@ -18,11 +18,7 @@ public class JobServlet extends ServletBase {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id) {
-    TravisJob job = db.getTravisJob(id);
-    if (job.getFinishedAt() == null) {
-      job.setFinishedAt(Instant.now());
-    }
-    return gson().toJson(job);
+    return gson().toJson(db.getTravisJob(id).toJsonMap());
   }
 
 }

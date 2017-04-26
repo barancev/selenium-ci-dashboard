@@ -21,11 +21,7 @@ public class BuildServlet extends ServletBase {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id) {
-    TravisBuild build = db.getTravisBuild(id);
-    if (build.getFinishedAt() == null) {
-      build.setFinishedAt(Instant.now());
-    }
-    return gson().toJson(build);
+    return gson().toJson(db.getTravisBuild(id).toJsonMap());
   }
 
 }

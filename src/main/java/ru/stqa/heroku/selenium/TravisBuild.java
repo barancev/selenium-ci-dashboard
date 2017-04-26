@@ -5,6 +5,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Entity
 @Table(name = "builds")
@@ -17,7 +20,6 @@ public class TravisBuild {
   private String result;
   private Instant startedAt;
   private Instant finishedAt;
-  private Duration duration;
   private String branch;
   private String commit;
   private String commitMessage;
@@ -34,7 +36,6 @@ public class TravisBuild {
     this.result = other.result;
     this.startedAt = other.startedAt;
     this.finishedAt = other.finishedAt;
-    this.duration = other.duration;
     this.branch = other.branch;
     this.commit = other.commit;
     this.commitMessage = other.commitMessage;
@@ -83,11 +84,6 @@ public class TravisBuild {
 
   private void setStartedAt(Instant startedAt) {
     this.startedAt = startedAt;
-    if (startedAt != null && finishedAt != null) {
-      duration = Duration.between(startedAt, finishedAt);
-    } else {
-      duration = null;
-    }
   }
 
   public Instant getFinishedAt() {
@@ -96,15 +92,6 @@ public class TravisBuild {
 
   void setFinishedAt(Instant finishedAt) {
     this.finishedAt = finishedAt;
-    if (startedAt != null && finishedAt != null) {
-      duration = Duration.between(startedAt, finishedAt);
-    } else {
-      duration = null;
-    }
-  }
-
-  public Duration getDuration() {
-    return duration;
   }
 
   public String getBranch() {
@@ -163,6 +150,40 @@ public class TravisBuild {
     this.pullRequestTitle = pullRequestTitle;
   }
 
+  public Map<String, Object> toJsonMap() {
+    Map<String, Object> map = new HashMap<>();
+    map.put("id", getId());
+    map.put("number", getNumber());
+    if (getStartedAt() != null) {
+      map.put("started", getStartedAt());
+      if (getFinishedAt() != null) {
+        map.put("finished", getFinishedAt());
+        map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
+        if ("0".equals(getResult())) {
+          map.put("state", "passed");
+        } else {
+          map.put("state", "failed");
+        }
+        //map.put("state", "skipped");
+      } else {
+        map.put("finished", "-");
+        map.put("duration", Duration.between(getStartedAt(), Instant.now()));
+        map.put("state", "running");
+        //map.put("state", "cancelled");
+      }
+    } else {
+      map.put("started", "-");
+      map.put("finished", "-");
+      map.put("duration", "-");
+      map.put("state", "pending");
+    }
+    map.put("branch", getBranch());
+    map.put("commit", getCommit());
+    map.put("commitMessage", getCommitMessage());
+    map.put("commitAuthor", getCommitAuthor());
+    return map;
+  }
+
   public static Builder newBuilder() {
     return new TravisBuild().new Builder();
   }
@@ -192,12 +213,12 @@ public class TravisBuild {
     }
 
     public Builder setStartedAt(Instant startedAt) {
-      TravisBuild.this.setStartedAt(startedAt);
+      TravisBuild.this.startedAt = startedAt;
       return this;
     }
 
     public Builder setFinishedAt(Instant finishedAt) {
-      TravisBuild.this.setFinishedAt(finishedAt);
+      TravisBuild.this.finishedAt = finishedAt;
       return this;
     }
 

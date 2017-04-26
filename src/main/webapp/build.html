@@ -3,6 +3,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.84/jsrender.min.js"></script>
     <script src="//use.fontawesome.com/c938e2358b.js"></script>
+    <script src="travis.js"></script>
     <link rel="stylesheet" href="travis.css">
   </head>
   <body>
@@ -44,7 +45,8 @@
         <thead>
         <tr>
           <th>Job</th>
-          <th>Started At</th>
+          <th>Started</th>
+          <th>Finished</th>
           <th>Duration</th>
           <th>OS</th>
           <th>Language</th>
@@ -54,7 +56,8 @@
         <tbody>{{for records}}
           <tr job-id="{{:id}}">
             <td class="info">{{:stateIcon}}#{{:number}}</td>
-            <td class="started"><i class="fa fa-calendar" aria-hidden="true"></i>{{:startedAt}}</td>
+            <td class="started"><i class="fa fa-calendar" aria-hidden="true"></i>{{:started}}</td>
+            <td class="started"><i class="fa fa-flag-checkered" aria-hidden="true"></i>{{:finished}}</td>
             <td class="duration"><i class="fa fa-clock-o" aria-hidden="true"></i>{{:duration}}</td>
             <td class="os"><i class="fa fa-{{:os}}" aria-hidden="true"></i></td>
             <td class="language">{{:language}}</td>
@@ -68,22 +71,10 @@
       var queryString = window.location.href.slice(window.location.href.indexOf("?") + 1);
       var buildId = queryString.slice(queryString.indexOf("=") + 1);
 
-      var stateIcon = function(state) {
-        if (state == 0) {
-          return '<i class="fa fa-check" aria-hidden="true"></i>';
-        } else if (state == 1) {
-          return '<i class="fa fa-times" aria-hidden="true"></i>';
-        } else if (state == undefined) {
-          return '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>';
-        } else {
-          return '<i class="fa fa-question-circle-o" aria-hidden="true" alt="'+state+'"></i>';
-        }
-      };
-
       var sidebarBuildsTmpl = $.templates("#sidebar-builds-tmpl");
       $.getJSON("/rest/builds", function(data) {
         data["records"].forEach(function(build) {
-          build["stateIcon"] = stateIcon(build["result"]);
+          build["stateIcon"] = stateIcon(build["state"]);
           build["active"] = build["id"] == buildId ? "active" : "";
         });
         $("#sidebar1").html(sidebarBuildsTmpl.render(data));
@@ -91,14 +82,14 @@
 
       var metadataTmpl = $.templates("#metadata-tmpl");
       $.getJSON("/rest/build/"+buildId, function(data) {
-        data["stateIcon"] = stateIcon(data["result"]);
+        data["stateIcon"] = stateIcon(data["state"]);
         $("#metadata").html(metadataTmpl.render(data));
       });
 
       var jobTableTmpl = $.templates("#table-jobs-tmpl");
       $.getJSON("/rest/jobs/"+buildId, function(data) {
         data["records"].forEach(function(job) {
-          job["stateIcon"] = stateIcon(job["result"]);
+          job["stateIcon"] = stateIcon(job["state"]);
         });
         $("#table-jobs").html(jobTableTmpl.render(data));
       });
