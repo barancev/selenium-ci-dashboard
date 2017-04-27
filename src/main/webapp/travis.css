@@ -15,18 +15,23 @@ table {
   margin: 5px;
 }
 
-table thead tr th {
+th {
   background-color: #c8c8ff;
   padding: 2px 5px;
   text-align: left;
 }
 
-table tbody tr td {
+td {
   margin: 5px;
   border-bottom: 1px solid #e0e0e0;
   padding-right: 25px;
   cursor: pointer;
   vertical-align: top;
+}
+
+td span {
+  display: inline-block;
+  padding: 2px 5px;
 }
 
 #header {
@@ -127,6 +132,15 @@ table tbody tr td {
 
 #table-tests .failed {
   color: red;
+}
+
+#testcase-info {
+  margin-left: 7px;
+}
+
+#testcase-stacktrace {
+  white-space: pre;
+  font-family: monospace;
 }
 
 .fa {

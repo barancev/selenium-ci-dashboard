@@ -162,4 +162,11 @@ public class Storage {
     }
   }
 
+  public TestRun getTestCase(String jobId, String testClass, String testCase) {
+    try (Session session = sessionFactory.openSession()) {
+      return session.createQuery("from TestRun where jobId=:jobId and testClass=:testClass and testCase=:testCase", TestRun.class)
+        .setParameter("jobId", jobId).setParameter("testClass", testClass).setParameter("testCase", testCase).getSingleResult();
+    }
+  }
+
 }

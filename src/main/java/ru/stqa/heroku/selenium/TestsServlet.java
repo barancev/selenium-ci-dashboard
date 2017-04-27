@@ -39,4 +39,16 @@ public class TestsServlet extends ServletBase {
     return gson().toJson(map);
   }
 
+  @GET
+  @Path("{id}/{testClass}/{testCase}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String doGet(@PathParam("id") String jobId, @PathParam("testClass") String testClass, @PathParam("testCase") String testCase) {
+    TestRun testRun = db.getTestCase(jobId, testClass, testCase);
+    Map<String, Object> map = testRun.toJsonMap();
+    map.put("jobId", jobId);
+    map.put("testClass", testClass);
+    map.put("collapsedTestClass", TestClass.collapse(testClass));
+    return gson().toJson(map);
+  }
+
 }

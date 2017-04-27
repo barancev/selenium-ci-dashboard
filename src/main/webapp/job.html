@@ -27,6 +27,7 @@
         </div>
         <div id="table-tests"></div>
       </div>
+      <div id="history" class="sidebar"></div>
     </div>
 
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
@@ -78,14 +79,21 @@
         </thead>
         <tbody>{{for records}}
           <tr class="{{:hasFailed}}" test-class="{{:name}}">
-            <td class="info" title="{{:name}}">{{:collapsedName}}</td>
-            <td class="passed">{{:passed}}</td>
-            <td class="failed">{{:failed}}</td>
-            <td class="skipped">{{:skipped}}</td>
-            <td class="total">{{:total}}</td>
+            <td title="{{:name}}"><span>{{:collapsedName}}</span></td>
+            <td class="passed"><span>{{:passed}}</span></td>
+            <td class="failed"><span>{{:failed}}</span></td>
+            <td><span>{{:skipped}}</span></td>
+            <td><span>{{:total}}</span></td>
           </tr>
         {{/for}}</tbody>
       </table>
+    </script>
+
+    <script id="sidebar-history-tmpl" type="text/x-jsrender">
+      <h2>Job History</h2>
+      <ul id="sidebar-history">{{for records}}
+        <li class="{{:active}}"><a href="/build.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
+      {{/for}}</ul>
     </script>
 
     <script>
@@ -121,6 +129,15 @@
         var jobTmpl = $.templates("#job-info-tmpl");
         job["stateIcon"] = stateIcon(job["state"]);
         $("#job-metadata").html(jobTmpl.render(job));
+
+        var historyTmpl = $.templates("#sidebar-history-tmpl");
+        $.getJSON("/rest/builds", function(data) {
+          data["records"].forEach(function(build) {
+            build["stateIcon"] = stateIcon(build["state"]);
+            build["active"] = build["id"] == buildId ? "active" : "";
+          });
+          $("#history").html(historyTmpl.render(data));
+        });
       });
 
       var testTableTmpl = $.templates("#table-tests-tmpl");
@@ -140,7 +157,8 @@
         $("#table-tests tbody tr:not(.has_failed)").toggleClass("hidden");
         $("#switcher-link").toggleText("Show All", "Show Failed");
       };
-      $.ready(function() {toggleFailed()});
+
+
     </script>
   </body>
 </html>
