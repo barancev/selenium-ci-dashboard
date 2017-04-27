@@ -66,6 +66,8 @@ public class NotificationRule extends TestWatcher {
       map.put("testcase", description.getMethodName());
       map.put("job_id", jobId);
       map.put("result", "failed");
+      map.put("exception", e.getClass().getName());
+      map.put("message", e.getMessage());
       map.put("stacktrace", stacktraceToString(e));
       map.put("started_at", startedAt);
       map.put("finished_at", finishedAt);

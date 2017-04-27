@@ -27,6 +27,7 @@
         </div>
         <div id="table-tests"></div>
       </div>
+      <div id="history" class="sidebar"></div>
     </div>
 
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
@@ -74,7 +75,7 @@
         <tr>
           <th>Test Method</th>
           <th>State</th>
-          <th>Message</th>
+          <th>Exception</th>
           <th>Age</th>
           <th>Duration</th>
         </tr>
@@ -83,12 +84,19 @@
           <tr class="{{:hasFailed}}" test-case="{{:name}}">
             <td class="info">{{:name}}</td>
             <td class="state">{{:stateIcon}}</td>
-            <td class="message">{{:message}}</td>
+            <td class="exception">{{:exception}}<br/>{{:message}}</td>
             <td class="age">{{:age}}</td>
             <td class="duration">{{:duration}}</td>
           </tr>
         {{/for}}</tbody>
       </table>
+    </script>
+
+    <script id="sidebar-history-tmpl" type="text/x-jsrender">
+      <h2>History</h2>
+      <ul id="sidebar-history">{{for records}}
+        <li class="{{:active}}"><a href="/build.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
+      {{/for}}</ul>
     </script>
 
     <script>

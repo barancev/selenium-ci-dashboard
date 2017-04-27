@@ -34,6 +34,8 @@ public class TestRunServlet {
       .setResult(stringOrNull(json.get("result")))
       .setStartedAt(instantOrNull(json.get("started_at")))
       .setFinishedAt(instantOrNull(json.get("finished_at")))
+      .setException(stringOrNull(json.get("exception")))
+      .setMessage(stringOrNull(json.get("message")))
       .setStacktrace(stringOrNull(json.get("stacktrace")))
       .build();
   }

@@ -26,6 +26,7 @@ table tbody tr td {
   border-bottom: 1px solid #e0e0e0;
   padding-right: 25px;
   cursor: pointer;
+  vertical-align: top;
 }
 
 #header {
@@ -86,11 +87,11 @@ table tbody tr td {
   background-color: #c8c8ff;
 }
 
-#sidebar2 {
+#sidebar2, #history {
   background-color: #f0f0f0;
 }
 
-#sidebar2 li.active {
+#sidebar2 li.active, #history li.active {
   background-color: #d8d8ff;
 }
 

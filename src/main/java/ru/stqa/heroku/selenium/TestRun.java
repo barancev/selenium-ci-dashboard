@@ -24,6 +24,9 @@ public class TestRun {
   private String result;
   private Instant startedAt;
   private Instant finishedAt;
+  private String exception;
+  @Type(type="text")
+  private String message;
   @Type(type="text")
   private String stacktrace;
 
@@ -37,6 +40,8 @@ public class TestRun {
     this.result = other.result;
     this.startedAt = other.startedAt;
     this.finishedAt = other.finishedAt;
+    this.exception = other.exception;
+    this.message = other.message;
     this.stacktrace = other.stacktrace;
     return this;
   }
@@ -97,6 +102,22 @@ public class TestRun {
     this.finishedAt = finishedAt;
   }
 
+  public String getException() {
+    return exception;
+  }
+
+  private void setException(String exception) {
+    this.exception = exception;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  private void setMessage(String message) {
+    this.message = message;
+  }
+
   public String getStacktrace() {
     return stacktrace;
   }
@@ -126,6 +147,9 @@ public class TestRun {
       map.put("duration", "-");
       map.put("state", "pending");
     }
+    map.put("exception", exception);
+    map.put("message", message);
+    map.put("stacktrace", stacktrace);
     return map;
   }
 
@@ -169,6 +193,16 @@ public class TestRun {
 
     public Builder setFinishedAt(Instant finishedAt) {
       TestRun.this.finishedAt = finishedAt;
+      return this;
+    }
+
+    public Builder setException(String exception) {
+      TestRun.this.exception = exception;
+      return this;
+    }
+
+    public Builder setMessage(String message) {
+      TestRun.this.message = message;
       return this;
     }
 
