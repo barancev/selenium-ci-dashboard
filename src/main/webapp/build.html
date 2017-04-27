@@ -4,6 +4,13 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.84/jsrender.min.js"></script>
     <script src="//use.fontawesome.com/c938e2358b.js"></script>
     <script src="travis.js"></script>
+    <script type="application/javascript">
+      $.fn.extend({
+        toggleText: function(a, b){
+          return this.text(this.text() == b ? a : b);
+        }
+      });
+    </script>
     <link rel="stylesheet" href="travis.css">
   </head>
   <body>
@@ -41,6 +48,7 @@
     </script>
 
     <script id="table-jobs-tmpl" type="text/x-jsrender">
+      <div id="switcher"><a href="javascript:toggleFailed()" id="switcher-link">Show Failed</a></div>
       <table>
         <thead>
         <tr>
@@ -54,7 +62,7 @@
         </tr>
         </thead>
         <tbody>{{for records}}
-          <tr job-id="{{:id}}">
+          <tr class="{{:hasFailed}}" job-id="{{:id}}">
             <td class="info">{{:stateIcon}}#{{:number}}</td>
             <td class="started"><i class="fa fa-calendar" aria-hidden="true"></i>{{:started}}</td>
             <td class="started"><i class="fa fa-flag-checkered" aria-hidden="true"></i>{{:finished}}</td>
@@ -89,6 +97,7 @@
       $.getJSON("/rest/jobs/"+buildId, function(data) {
         data["records"].forEach(function(job) {
           job["stateIcon"] = stateIcon(job["state"]);
+          job["hasFailed"] = job["state"] == "failed" ? "has_failed" : "";
         });
         $("#table-jobs").html(jobTableTmpl.render(data));
       });
@@ -96,6 +105,11 @@
       $("#table-jobs").on("click", "tbody tr", function() {
         window.location = "job.html?id=" + $(this).attr("job-id");
       });
+
+      var toggleFailed = function() {
+        $("#table-jobs tbody tr:not(.has_failed)").toggleClass("hidden");
+        $("#switcher-link").toggleText("Show All", "Show Failed");
+      };
     </script>
   </body>
 </html>
