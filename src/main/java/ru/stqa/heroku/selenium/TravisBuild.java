@@ -21,9 +21,6 @@ public class TravisBuild {
   private String commit;
   private String commitMessage;
   private String commitAuthor;
-  private boolean pullRequest;
-  private String pullRequestNumber;
-  private String pullRequestTitle;
 
   @OneToMany(mappedBy = "build", fetch = FetchType.LAZY)
   @OrderBy("id")
@@ -41,9 +38,6 @@ public class TravisBuild {
     this.commit = other.commit;
     this.commitMessage = other.commitMessage;
     this.commitAuthor = other.commitAuthor;
-    this.pullRequest = other.pullRequest;
-    this.pullRequestNumber = other.pullRequestNumber;
-    this.pullRequestTitle = other.pullRequestTitle;
     return this;
   }
 
@@ -125,30 +119,6 @@ public class TravisBuild {
 
   private void setCommitAuthor(String commitAuthor) {
     this.commitAuthor = commitAuthor;
-  }
-
-  public boolean isPullRequest() {
-    return pullRequest;
-  }
-
-  private void setPullRequest(boolean pullRequest) {
-    this.pullRequest = pullRequest;
-  }
-
-  public String isPullRequestNumber() {
-    return pullRequestNumber;
-  }
-
-  private void setPullRequestNumber(String pullRequestNumber) {
-    this.pullRequestNumber = pullRequestNumber;
-  }
-
-  public String isPullRequestTitle() {
-    return pullRequestTitle;
-  }
-
-  private void setPullRequestTitle(String pullRequestTitle) {
-    this.pullRequestTitle = pullRequestTitle;
   }
 
   public List<TravisJob> getJobs() {
@@ -250,21 +220,6 @@ public class TravisBuild {
 
     public Builder setCommitAuthor(String commitAuthor) {
       TravisBuild.this.commitAuthor = commitAuthor;
-      return this;
-    }
-
-    public Builder setPullRequest(boolean pullRequest) {
-      TravisBuild.this.pullRequest = pullRequest;
-      return this;
-    }
-
-    public Builder setPullRequestNumber(String pullRequestNumber) {
-      TravisBuild.this.pullRequestNumber = pullRequestNumber;
-      return this;
-    }
-
-    public Builder setPullRequestTitle(String pullRequestTitle) {
-      TravisBuild.this.pullRequestTitle = pullRequestTitle;
       return this;
     }
 

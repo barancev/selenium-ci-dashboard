@@ -103,11 +103,11 @@ public class NotificationRule extends TestWatcher {
 
   private Long notify(Map<String, Object> map, String notificationUrl) {
     try {
-      CloseableHttpClient httpclient = HttpClients.createDefault();
+      CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpPost httpPost = new HttpPost(notificationUrl);
       httpPost.setHeader("Content-Type", "application/json");
       httpPost.setEntity(new StringEntity(new Gson().toJson(map)));
-      CloseableHttpResponse response = httpclient.execute(httpPost);
+      CloseableHttpResponse response = httpClient.execute(httpPost);
       String body = EntityUtils.toString(response.getEntity());
       return Long.parseLong(body);
 

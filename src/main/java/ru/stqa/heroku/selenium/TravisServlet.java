@@ -25,6 +25,10 @@ public class TravisServlet {
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public void doPost(@FormParam("payload") String payload) {
     JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
+    if (json.get("pull_request").getAsBoolean()) {
+      // don't track pull requests
+      return;
+    }
     try (Session session = db.createSession()) {
       session.beginTransaction();
       TravisBuild build = jsonToTravisBuild(json);
@@ -47,9 +51,6 @@ public class TravisServlet {
       .setCommit(stringOrNull(json.get("commit")))
       .setCommitMessage(stringOrNull(json.get("message")))
       .setCommitAuthor(stringOrNull(json.get("author_name")))
-      .setPullRequest(json.get("pull_request").getAsBoolean())
-      .setPullRequestNumber(stringOrNull(json.get("pull_request_number")))
-      .setPullRequestTitle(stringOrNull(json.get("pull_request_title")))
       .build();
   }
 
