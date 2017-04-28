@@ -44,10 +44,17 @@ td span {
 
 #header h1 {
   padding: 10px 0;
+  font-size: 30px;
 }
 
 #header h1 a {
   text-decoration: none;
+}
+
+#header h1 a img {
+  vertical-align: top;
+  width: 40px;
+  margin-right: 5px;
 }
 
 #body {
