@@ -17,6 +17,10 @@ table {
   width: 100%;
 }
 
+tr:hover {
+  background-color: #f0f0ff;
+}
+
 th {
   background-color: #c8c8ff;
   padding: 2px 5px;
