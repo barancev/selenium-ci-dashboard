@@ -32,14 +32,14 @@
 
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
       <h2>Builds</h2>
-      <ul id="sidebar-builds">{{for records}}
+      <ul id="sidebar-builds">{{for builds}}
         <li class="{{:active}}"><a href="/build.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
 
     <script id="sidebar-jobs-tmpl" type="text/x-jsrender">
       <h2>Jobs</h2>
-      <ul id="sidebar-jobs">{{for records}}
+      <ul id="sidebar-jobs">{{for jobs}}
         <li class="{{:active}}"><a href="/job.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
@@ -80,7 +80,7 @@
           <th>Duration</th>
         </tr>
         </thead>
-        <tbody>{{for records}}
+        <tbody>{{for testCases}}
           <tr class="{{:hasFailed}}" test-case="{{:name}}">
             <td><span>{{:name}}</span></td>
             <td>{{:stateIcon}}</td>
@@ -103,49 +103,44 @@
       var jobId = getParameterByName("jobId");
       var testClass = getParameterByName("testClass");
 
-      $.getJSON("/rest/job/"+jobId, function(job) {
-        var buildId = job["buildId"];
+      $.getJSON("/rest/job/"+jobId+"/"+testClass, function(job) {
+        var buildId = job["build"]["id"];
 
         var sidebarBuildsTmpl = $.templates("#sidebar-builds-tmpl");
         $.getJSON("/rest/builds", function(data) {
-          data["records"].forEach(function(build) {
+          data.forEach(function(build) {
             build["stateIcon"] = stateIcon(build["state"]);
             build["active"] = build["id"] == buildId ? "active" : "";
           });
-          $("#sidebar1").html(sidebarBuildsTmpl.render(data));
+          $("#sidebar1").html(sidebarBuildsTmpl.render({"builds": data}));
         });
 
         var sidebarJobsTmpl = $.templates("#sidebar-jobs-tmpl");
-        $.getJSON("/rest/jobs/"+buildId, function(data) {
-          data["records"].forEach(function(job) {
-            job["stateIcon"] = stateIcon(job["state"]);
-            job["active"] = job["id"] == jobId ? "active" : "";
-          });
-          $("#sidebar2").html(sidebarJobsTmpl.render(data));
+        job["build"]["jobs"].forEach(function(j2) {
+          j2["stateIcon"] = stateIcon(j2["state"]);
+          j2["active"] = j2["id"] == jobId ? "active" : "";
         });
+        $("#sidebar2").html(sidebarJobsTmpl.render({"jobs": job["build"]["jobs"]}));
 
         var buildTmpl = $.templates("#build-info-tmpl");
-        $.getJSON("/rest/build/"+buildId, function(build) {
-          build["stateIcon"] = stateIcon(build["state"]);
-          $("#build-metadata").html(buildTmpl.render(build));
-        });
+        job["build"]["stateIcon"] = stateIcon(job["build"]["state"]);
+        $("#build-metadata").html(buildTmpl.render(job["build"]));
 
         var jobTmpl = $.templates("#job-info-tmpl");
         job["stateIcon"] = stateIcon(job["state"]);
         $("#job-metadata").html(jobTmpl.render(job));
-      });
 
-      var testTableTmpl = $.templates("#table-tests-tmpl");
-      $.getJSON("/rest/tests/"+jobId+"/"+testClass, function(data) {
-        data["records"].forEach(function(test) {
+        var testTableTmpl = $.templates("#table-tests-tmpl");
+        job["testClass"]["testCases"].forEach(function(test) {
           test["stateIcon"] = stateIcon(test["state"]);
           test["hasFailed"] = test["state"] == "failed" ? "has_failed" : "hidden";
         });
-        $("#table-tests").html(testTableTmpl.render(data));
-      });
+        $("#table-tests").html(testTableTmpl.render(job["testClass"]));
 
-      $("#table-tests").on("click", "tbody tr", function() {
-        window.location = "testcase.html?jobId=" + jobId + "&testClass=" + testClass + "&testCase=" + $(this).attr("test-case");
+        $("#table-tests").on("click", "tbody tr", function() {
+          window.location = "testcase.html?jobId=" + jobId + "&testClass=" + testClass + "&testCase=" + $(this).attr("test-case");
+        });
+
       });
 
       var toggleFailed = function() {

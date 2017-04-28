@@ -4,13 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.hibernate.Session;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.time.Instant;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Path("testrun")
 public class TestRunServlet {
@@ -21,14 +19,21 @@ public class TestRunServlet {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String doPost(String payload) {
-    JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
-    return db.store(jsonToTestRun(json)).toString();
+    try (Session session = db.createSession()) {
+      session.beginTransaction();
+      JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
+      TestRun test = jsonToTestRun(json);
+      String jobId = stringOrNull(json.get("job_id"));
+      test.setJob(jobId !=  null ? db.getTravisJob(jobId, session) : null);
+      String result = db.store(test, session).toString();
+      session.getTransaction().commit();
+      return result;
+    }
   }
 
   private TestRun jsonToTestRun(JsonObject json) {
     return TestRun.newBuilder()
       .setId(numberOrNull(json.get("id")))
-      .setJobId(stringOrNull(json.get("job_id")))
       .setTestClass(stringOrNull(json.get("testclass")))
       .setTestCase(json.get("testcase").getAsString())
       .setResult(stringOrNull(json.get("result")))

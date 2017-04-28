@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.hibernate.Session;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -24,11 +25,14 @@ public class TravisServlet {
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public void doPost(@FormParam("payload") String payload) {
     JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
-    TravisBuild build = jsonToTravisBuild(json);
-    List<TravisJob> jobs = jsonToTravisJobs(json);
-
-    db.store(build);
-    jobs.forEach(j -> db.store(j));
+    try (Session session = db.createSession()) {
+      session.beginTransaction();
+      TravisBuild build = jsonToTravisBuild(json);
+      db.store(build, session);
+      List<TravisJob> jobs = jsonToTravisJobs(json, build);
+      jobs.forEach(job -> db.store(job, session));
+      session.getTransaction().commit();
+    }
   }
 
   private TravisBuild jsonToTravisBuild(JsonObject json) {
@@ -49,16 +53,16 @@ public class TravisServlet {
       .build();
   }
 
-  private List<TravisJob> jsonToTravisJobs(JsonObject json) {
+  private List<TravisJob> jsonToTravisJobs(JsonObject json, TravisBuild build) {
     return StreamSupport.stream(json.get("matrix").getAsJsonArray().spliterator(), false)
-      .map(this::jsonToTravisJob).collect(Collectors.toList());
+      .map((job) -> jsonToTravisJob(job, build)).collect(Collectors.toList());
   }
 
-  private TravisJob jsonToTravisJob(JsonElement jsonElement) {
+  private TravisJob jsonToTravisJob(JsonElement jsonElement, TravisBuild build) {
     JsonObject json = jsonElement.getAsJsonObject();
     JsonObject config = json.get("config").getAsJsonObject();
     return TravisJob.newBuilder()
-      .setBuildId(json.get("parent_id").getAsString())
+      .setBuild(build)
       .setId(json.get("id").getAsString())
       .setNumber(json.get("number").getAsString())
       .setStatus(stringOrNull(json.get("status")))

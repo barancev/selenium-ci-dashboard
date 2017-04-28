@@ -2,10 +2,7 @@ package ru.stqa.heroku.selenium;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -20,7 +17,6 @@ public class TestRun {
   private Long id;
   private String testClass;
   private String testCase;
-  private String jobId;
   private String result;
   private Instant startedAt;
   private Instant finishedAt;
@@ -30,13 +26,15 @@ public class TestRun {
   @Type(type="text")
   private String stacktrace;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  private TravisJob job;
+
   TestRun() {}
 
   TestRun updateFrom(TestRun other) {
     this.id = other.id;
     this.testClass = other.testClass;
     this.testCase = other.testCase;
-    this.jobId = other.jobId;
     this.result = other.result;
     this.startedAt = other.startedAt;
     this.finishedAt = other.finishedAt;
@@ -70,12 +68,12 @@ public class TestRun {
     this.testCase = testCase;
   }
 
-  public String getJobId() {
-    return jobId;
+  public TravisJob getJob() {
+    return job;
   }
 
-  private void setJobId(String jobId) {
-    this.jobId = jobId;
+  public void setJob(TravisJob job) {
+    this.job = job;
   }
 
   public String getResult() {
@@ -173,11 +171,6 @@ public class TestRun {
 
     public Builder setTestCase(String testcase) {
       TestRun.this.testCase = testcase;
-      return this;
-    }
-
-    public Builder setJobId(String jobId) {
-      TestRun.this.jobId = jobId;
       return this;
     }
 

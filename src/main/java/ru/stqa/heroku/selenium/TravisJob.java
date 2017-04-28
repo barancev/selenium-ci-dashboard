@@ -1,18 +1,17 @@
 package ru.stqa.heroku.selenium;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jersey.repackaged.com.google.common.collect.Lists;
+
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "jobs")
 public class TravisJob {
 
-  private String buildId;
   @Id
   private String id;
   private String number;
@@ -25,10 +24,15 @@ public class TravisJob {
   private String env;
   private boolean allowFailure;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  private TravisBuild build;
+
+  @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
+  private List<TestRun> testRuns = new ArrayList<>();
+
   private TravisJob() {}
 
   TravisJob updateFrom(TravisJob other) {
-    this.buildId = other.buildId;
     this.number = other.number;
     this.status = other.status;
     this.result = other.result;
@@ -41,12 +45,12 @@ public class TravisJob {
     return this;
   }
 
-  public String getBuildId() {
-    return buildId;
+  public TravisBuild getBuild() {
+    return build;
   }
 
-  private void setBuildId(String buildId) {
-    this.buildId = buildId;
+  private void setBuild(TravisBuild build) {
+    this.build = build;
   }
 
   public String getId() {
@@ -129,10 +133,13 @@ public class TravisJob {
     this.allowFailure = allowFailure;
   }
 
-  public Map<String, Object> toJsonMap() {
+  public List<TestRun> getTestRuns() {
+    return testRuns;
+  }
+
+  public Map<String, Object> toMinJsonMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("id", getId());
-    map.put("buildId", getBuildId());
     map.put("number", getNumber());
     if (getStartedAt() != null) {
       map.put("started", getStartedAt());
@@ -163,6 +170,46 @@ public class TravisJob {
     return map;
   }
 
+  public Map<String, Object> toFullJsonMap() {
+    Map<String, Object> map = toMinJsonMap();
+    map.put("build", build.toFullJsonMap());
+    Map<String, TestClass> testClasses = new HashMap<>();
+    for (TestRun testRun : testRuns) {
+      TestClass testClass = testClasses.computeIfAbsent(testRun.getTestClass(), k -> new TestClass(testRun.getTestClass()));
+      testClass.addTestCase(testRun);
+    }
+    List<TestClass> list = Lists.newArrayList(testClasses.values());
+    list.sort(Comparator.comparing(TestClass::getName));
+    map.put("testClasses", list.stream().map(TestClass::toMinJsonMap).collect(Collectors.toList()));
+    return map;
+  }
+
+  public Map<String, Object> toFullJsonMap(String testClassName) {
+    Map<String, Object> map = toMinJsonMap();
+    map.put("build", build.toFullJsonMap());
+    TestClass testClass = new TestClass(testClassName);
+    for (TestRun testRun : testRuns) {
+      if (testRun.getTestClass().equals(testClassName)) {
+        testClass.addTestCase(testRun);
+      }
+    }
+    map.put("testClass", testClass.toFullJsonMap());
+    return map;
+  }
+
+  public Map<String, Object> toFullJsonMap(String testClassName, String testCaseName) {
+    Map<String, Object> map = toMinJsonMap();
+    map.put("build", build.toFullJsonMap());
+    TestClass testClass = new TestClass(testClassName);
+    for (TestRun testRun : testRuns) {
+      if (testRun.getTestClass().equals(testClassName) && testRun.getTestCase().equals(testCaseName)) {
+        testClass.addTestCase(testRun);
+      }
+    }
+    map.put("testClass", testClass.toFullJsonMap());
+    return map;
+  }
+
   public static Builder newBuilder() {
     return new TravisJob().new Builder();
   }
@@ -172,8 +219,8 @@ public class TravisJob {
     private Builder() {
     }
 
-    public Builder setBuildId(String buildId) {
-      TravisJob.this.buildId = buildId;
+    public Builder setBuild(TravisBuild build) {
+      TravisJob.this.build = build;
       return this;
     }
 

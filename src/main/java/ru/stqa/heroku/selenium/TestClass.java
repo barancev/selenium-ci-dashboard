@@ -1,18 +1,20 @@
 package ru.stqa.heroku.selenium;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class TestClass {
+
+  private static Logger log = Logger.getLogger(TestClass.class.getName());
 
   private String name;
   private int passed;
   private int failed;
   private int skipped;
   private int running;
+
+  private List<TestRun> testCases = new ArrayList<>();
 
   public TestClass(String name) {
     this.name = name;
@@ -22,7 +24,28 @@ public class TestClass {
     return name;
   }
 
-  public static String collapse(String fullName) {
+  public void addTestCase(TestRun testCase) {
+    testCases.add(testCase);
+    if (testCase.getFinishedAt() ==  null) {
+      running++;
+    } else {
+      switch (testCase.getResult()) {
+        case "passed":
+          passed++;
+          break;
+        case "failed":
+          failed++;
+          break;
+        case "skipped":
+          skipped++;
+          break;
+        default:
+          log.info("Unknown test case result " + testCase.getResult());
+      }
+    }
+  }
+
+  private String collapse(String fullName) {
     return Arrays.stream(fullName.split("\\."))
       .reduce(new ArrayList<String>(),
         (list, element) -> {
@@ -33,23 +56,7 @@ public class TestClass {
         (l1, l2) -> l1).stream().collect(Collectors.joining("."));
   }
 
-  public void incPassed() {
-    passed++;
-  }
-
-  public void incFailed() {
-    failed++;
-  }
-
-  public void incSkipped() {
-    skipped++;
-  }
-
-  public void incRunning() {
-    running++;
-  }
-
-  public Map<String, Object> toJsonMap() {
+  public Map<String, Object> toMinJsonMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("name", getName());
     map.put("collapsedName", collapse(getName()));
@@ -57,6 +64,13 @@ public class TestClass {
     map.put("failed", failed > 0 ? failed : "");
     map.put("skipped", skipped > 0 ? skipped : "");
     map.put("running", running > 0 ? running : "");
+    return map;
+  }
+
+  public Map<String, Object> toFullJsonMap() {
+    Map<String, Object> map = toMinJsonMap();
+    testCases.sort(Comparator.comparing(TestRun::getId));
+    map.put("testCases", testCases.stream().map(TestRun::toJsonMap).collect(Collectors.toList()));
     return map;
   }
 

@@ -1,13 +1,10 @@
 package ru.stqa.heroku.selenium;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "builds")
@@ -27,6 +24,10 @@ public class TravisBuild {
   private boolean pullRequest;
   private String pullRequestNumber;
   private String pullRequestTitle;
+
+  @OneToMany(mappedBy = "build", fetch = FetchType.LAZY)
+  @OrderBy("id")
+  private List<TravisJob> jobs = new ArrayList<>();
 
   TravisBuild() {}
 
@@ -150,7 +151,11 @@ public class TravisBuild {
     this.pullRequestTitle = pullRequestTitle;
   }
 
-  public Map<String, Object> toJsonMap() {
+  public List<TravisJob> getJobs() {
+    return jobs;
+  }
+
+  public Map<String, Object> toMinJsonMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("id", getId());
     map.put("number", getNumber());
@@ -181,6 +186,12 @@ public class TravisBuild {
     map.put("commit", getCommit());
     map.put("commitMessage", getCommitMessage());
     map.put("commitAuthor", getCommitAuthor());
+    return map;
+  }
+
+  public Map<String, Object> toFullJsonMap() {
+    Map<String, Object> map = toMinJsonMap();
+    map.put("jobs", jobs.stream().map(TravisJob::toMinJsonMap).collect(Collectors.toList()));
     return map;
   }
 

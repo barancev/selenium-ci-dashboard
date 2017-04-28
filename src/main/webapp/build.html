@@ -28,7 +28,7 @@
 
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
       <h2>Builds</h2>
-      <ul id="sidebar-builds">{{for records}}
+      <ul id="sidebar-builds">{{for builds}}
         <li class="{{:active}}"><a href="/build.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
@@ -61,7 +61,7 @@
           <th>Env</th>
         </tr>
         </thead>
-        <tbody>{{for records}}
+        <tbody>{{for jobs}}
           <tr class="{{:hasFailed}}" job-id="{{:id}}">
             <td class="info">{{:stateIcon}}#{{:number}}</td>
             <td class="started"><i class="fa fa-calendar" aria-hidden="true"></i>{{:started}}</td>
@@ -80,26 +80,25 @@
 
       var sidebarBuildsTmpl = $.templates("#sidebar-builds-tmpl");
       $.getJSON("/rest/builds", function(data) {
-        data["records"].forEach(function(build) {
+        data.forEach(function(build) {
           build["stateIcon"] = stateIcon(build["state"]);
           build["active"] = build["id"] == buildId ? "active" : "";
         });
-        $("#sidebar1").html(sidebarBuildsTmpl.render(data));
+        $("#sidebar1").html(sidebarBuildsTmpl.render({"builds": data}));
       });
 
       var metadataTmpl = $.templates("#metadata-tmpl");
+      var jobTableTmpl = $.templates("#table-jobs-tmpl");
       $.getJSON("/rest/build/"+buildId, function(data) {
         data["stateIcon"] = stateIcon(data["state"]);
         $("#metadata").html(metadataTmpl.render(data));
-      });
 
-      var jobTableTmpl = $.templates("#table-jobs-tmpl");
-      $.getJSON("/rest/jobs/"+buildId, function(data) {
-        data["records"].forEach(function(job) {
+        data["jobs"].forEach(function(job) {
           job["stateIcon"] = stateIcon(job["state"]);
           job["hasFailed"] = job["state"] == "failed" ? "has_failed" : "";
         });
         $("#table-jobs").html(jobTableTmpl.render(data));
+
       });
 
       $("#table-jobs").on("click", "tbody tr", function() {
