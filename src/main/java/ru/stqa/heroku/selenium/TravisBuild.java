@@ -17,6 +17,7 @@ public class TravisBuild {
   @Id
   private String id;
   private String number;
+  // started, cancelled
   private String state;
   private Instant startedAt;
   private Instant finishedAt;
@@ -34,6 +35,7 @@ public class TravisBuild {
 
   TravisBuild updateFrom(JsonObject json) {
     this.state = stringOrNull(json.get("state"));
+    this.startedAt = instantOrNull(json.get("started_at"));
     this.finishedAt = instantOrNull(json.get("finished_at"));
     this.checkedAt = Instant.now();
     return this;
