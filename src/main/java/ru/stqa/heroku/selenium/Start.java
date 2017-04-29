@@ -2,7 +2,6 @@ package ru.stqa.heroku.selenium;
 
 import org.eclipse.jetty.quickstart.QuickStartWebApp;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 public class Start {
 

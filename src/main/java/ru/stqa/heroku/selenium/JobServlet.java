@@ -1,7 +1,5 @@
 package ru.stqa.heroku.selenium;
 
-import org.hibernate.Session;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

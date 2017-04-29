@@ -1,7 +1,6 @@
 package ru.stqa.heroku.selenium;
 
 import com.google.gson.*;
-import org.hibernate.Session;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -9,8 +8,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
 import java.util.Locale;
 
 public class ServletBase {

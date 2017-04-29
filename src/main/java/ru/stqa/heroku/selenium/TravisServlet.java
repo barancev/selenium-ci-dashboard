@@ -14,17 +14,21 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Path("travis")
 public class TravisServlet {
 
+  private static Logger log = Logger.getLogger(TravisServlet.class.getName());
+
   private Storage db = Storage.getInstance();
 
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public void doPost(@FormParam("payload") String payload) {
+    log.info(payload);
     JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
     if (json.get("pull_request").getAsBoolean()) {
       // don't track pull requests

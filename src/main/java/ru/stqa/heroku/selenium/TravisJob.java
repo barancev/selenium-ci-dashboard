@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 @Table(name = "jobs")
 public class TravisJob {
 
-  private static Logger log = Logger.getLogger(TravisJob.class.getName());
-
   @Id
   private String id;
   private String number;
@@ -39,7 +37,6 @@ public class TravisJob {
 
   TravisJob updateFrom(JsonObject json) {
     this.state = stringOrNull(json.get("state"));
-    log.info(this.id + " --- " + this.state);
     this.startedAt = instantOrNull(json.get("started_at"));
     this.finishedAt = instantOrNull(json.get("finished_at"));
     return this;

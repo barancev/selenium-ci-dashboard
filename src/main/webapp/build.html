@@ -55,7 +55,6 @@
         <thead>
         <tr>
           <th>Job</th>
-          <th>Started</th>
           <th>Duration</th>
           <th>OS</th>
           <th>Language</th>
@@ -64,8 +63,7 @@
         </thead>
         <tbody>{{for jobs}}
           <tr class="{{:hasFailed}}" job-id="{{:id}}">
-            <td class="info">{{:stateIcon}}#{{:number}}</td>
-            <td class="started"><i class="fa fa-calendar" aria-hidden="true"></i>{{:started}}</td>
+            <td class="{{:state}}">{{:stateIcon}}#{{:number}}</td>
             <td class="duration"><i class="fa fa-clock-o" aria-hidden="true"></i>{{:duration}}</td>
             <td class="os"><i class="fa fa-{{:os}}" aria-hidden="true"></i></td>
             <td class="language">{{:language}}</td>
