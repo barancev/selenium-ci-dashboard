@@ -1,22 +1,27 @@
 package ru.stqa.heroku.selenium;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import jersey.repackaged.com.google.common.collect.Lists;
 
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "jobs")
 public class TravisJob {
 
+  private static Logger log = Logger.getLogger(TravisJob.class.getName());
+
   @Id
   private String id;
   private String number;
-  private String status;
-  private String result;
+  private String state;
   private Instant startedAt;
   private Instant finishedAt;
   private String os;
@@ -32,17 +37,20 @@ public class TravisJob {
 
   private TravisJob() {}
 
-  TravisJob updateFrom(TravisJob other) {
-    this.number = other.number;
-    this.status = other.status;
-    this.result = other.result;
-    this.startedAt = other.startedAt;
-    this.finishedAt = other.finishedAt;
-    this.os = other.os;
-    this.language = other.language;
-    this.env = other.env;
-    this.allowFailure = other.allowFailure;
+  TravisJob updateFrom(JsonObject json) {
+    this.state = stringOrNull(json.get("state"));
+    log.info(this.id + " --- " + this.state);
+    this.startedAt = instantOrNull(json.get("started_at"));
+    this.finishedAt = instantOrNull(json.get("finished_at"));
     return this;
+  }
+
+  private String stringOrNull(JsonElement json) {
+    return json == null || json instanceof JsonNull ? null : json.getAsString();
+  }
+
+  private Instant instantOrNull(JsonElement json) {
+    return json == null || json instanceof JsonNull ? null : Instant.parse(json.getAsString());
   }
 
   public TravisBuild getBuild() {
@@ -69,20 +77,12 @@ public class TravisJob {
     this.number = number;
   }
 
-  public String getStatus() {
-    return status;
+  public String getState() {
+    return state;
   }
 
-  private void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getResult() {
-    return result;
-  }
-
-  private void setResult(String result) {
-    this.result = result;
+  void setState(String status) {
+    this.state = state;
   }
 
   public Instant getStartedAt() {
@@ -146,12 +146,7 @@ public class TravisJob {
       if (getFinishedAt() != null) {
         map.put("finished", getFinishedAt());
         map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
-        if ("0".equals(getResult())) {
-          map.put("state", "passed");
-        } else {
-          map.put("state", "failed");
-        }
-        //map.put("state", "skipped");
+        map.put("state", state);
       } else {
         map.put("finished", "-");
         map.put("duration", Duration.between(getStartedAt(), Instant.now()));
@@ -234,13 +229,8 @@ public class TravisJob {
       return this;
     }
 
-    public Builder setStatus(String status) {
-      TravisJob.this.status = status;
-      return this;
-    }
-
-    public Builder setResult(String result) {
-      TravisJob.this.result = result;
+    public Builder setState(String state) {
+      TravisJob.this.state = state;
       return this;
     }
 

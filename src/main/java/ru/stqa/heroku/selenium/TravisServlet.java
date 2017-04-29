@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.hibernate.Session;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -12,7 +11,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,22 +30,40 @@ public class TravisServlet {
       // don't track pull requests
       return;
     }
-    try (Session session = db.createSession()) {
+    String buildId = json.get("id").getAsString();
+    db.inSession((session) -> {
+      TravisBuild build = db.getTravisBuild(session, buildId);
       session.beginTransaction();
-      TravisBuild build = jsonToTravisBuild(json);
-      db.store(build, session);
-      List<TravisJob> jobs = jsonToTravisJobs(json, build);
-      jobs.forEach(job -> db.store(job, session));
+      if (build == null) {
+        build = jsonToTravisBuild(json);
+        session.save(build);
+        List<TravisJob> jobs = jsonToTravisJobs(json, build);
+        jobs.forEach(session::save);
+
+      } else {
+        session.save(build.updateFrom(json));
+        Map<String, JsonObject> jobObjects = getJobObjects(json);
+        build.getJobs().forEach(job -> job.updateFrom(jobObjects.get(job.getId())));
+      }
       session.getTransaction().commit();
+      return null;
+    });
+  }
+
+  private Map<String,JsonObject> getJobObjects(JsonObject json) {
+    Map<String,JsonObject> map = new HashMap<>();
+    for (JsonElement jobElement : json.get("matrix").getAsJsonArray()) {
+      JsonObject jobObject = jobElement.getAsJsonObject();
+      map.put(jobObject.get("id").getAsString(), jobObject);
     }
+    return map;
   }
 
   private TravisBuild jsonToTravisBuild(JsonObject json) {
     return TravisBuild.newBuilder()
       .setId(json.get("id").getAsString())
       .setNumber(json.get("number").getAsString())
-      .setStatus(stringOrNull(json.get("status")))
-      .setResult(stringOrNull(json.get("result")))
+      .setState(stringOrNull(json.get("status")))
       .setStartedAt(instantOrNull(json.get("started_at")))
       .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setBranch(stringOrNull(json.get("branch")))
@@ -66,8 +85,7 @@ public class TravisServlet {
       .setBuild(build)
       .setId(json.get("id").getAsString())
       .setNumber(json.get("number").getAsString())
-      .setStatus(stringOrNull(json.get("status")))
-      .setResult(stringOrNull(json.get("result")))
+      .setState(stringOrNull(json.get("status")))
       .setStartedAt(instantOrNull(json.get("started_at")))
       .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setOs(stringOrNull(config.get("os")))

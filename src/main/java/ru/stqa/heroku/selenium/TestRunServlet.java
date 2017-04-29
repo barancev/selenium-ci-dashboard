@@ -19,16 +19,16 @@ public class TestRunServlet {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String doPost(String payload) {
-    try (Session session = db.createSession()) {
+    return db.inSession((session) -> {
       session.beginTransaction();
       JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
       TestRun test = jsonToTestRun(json);
       String jobId = stringOrNull(json.get("job_id"));
-      test.setJob(jobId !=  null ? db.getTravisJob(jobId, session) : null);
+      test.setJob(jobId !=  null ? db.getTravisJob(session, jobId) : null);
       String result = db.store(test, session).toString();
       session.getTransaction().commit();
       return result;
-    }
+    });
   }
 
   private TestRun jsonToTestRun(JsonObject json) {

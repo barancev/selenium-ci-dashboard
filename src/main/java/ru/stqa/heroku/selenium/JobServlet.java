@@ -17,27 +17,29 @@ public class JobServlet extends ServletBase {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id) {
-    try (Session session = db.createSession()) {
-      return gson().toJson(db.getTravisJob(id, session).toFullJsonMap());
-    }
+    return db.inSession((session) -> {
+      db.updateBuilds(session);
+      return gson().toJson(db.getTravisJob(session, id).toFullJsonMap());
+    });
   }
 
   @GET
   @Path("{id}/{testClass}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id, @PathParam("testClass") String testClass) {
-    try (Session session = db.createSession()) {
-      return gson().toJson(db.getTravisJob(id, session).toFullJsonMap(testClass));
-    }
+    return db.inSession((session) -> {
+      db.updateBuilds(session);
+      return gson().toJson(db.getTravisJob(session, id).toFullJsonMap(testClass));
+    });
   }
 
   @GET
   @Path("{id}/{testClass}/{testCase}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id, @PathParam("testClass") String testClass, @PathParam("testCase") String testCase) {
-    try (Session session = db.createSession()) {
-      return gson().toJson(db.getTravisJob(id, session).toFullJsonMap(testClass, testCase));
-    }
+    return db.inSession((session) -> {
+      db.updateBuilds(session);
+      return gson().toJson(db.getTravisJob(session, id).toFullJsonMap(testClass, testCase));
+    });
   }
-
 }

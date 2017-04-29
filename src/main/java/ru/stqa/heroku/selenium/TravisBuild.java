@@ -1,5 +1,9 @@
 package ru.stqa.heroku.selenium;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,11 +17,10 @@ public class TravisBuild {
   @Id
   private String id;
   private String number;
-  private String status;
-  private String result;
+  private String state;
   private Instant startedAt;
   private Instant finishedAt;
-  private Instant lastCheck;
+  private Instant checkedAt;
   private String branch;
   private String commit;
   private String commitMessage;
@@ -29,17 +32,19 @@ public class TravisBuild {
 
   TravisBuild() {}
 
-  TravisBuild updateFrom(TravisBuild other) {
-    this.number = other.number;
-    this.status = other.status;
-    this.result = other.result;
-    this.startedAt = other.startedAt;
-    this.finishedAt = other.finishedAt;
-    this.branch = other.branch;
-    this.commit = other.commit;
-    this.commitMessage = other.commitMessage;
-    this.commitAuthor = other.commitAuthor;
+  TravisBuild updateFrom(JsonObject json) {
+    this.state = stringOrNull(json.get("state"));
+    this.finishedAt = instantOrNull(json.get("finished_at"));
+    this.checkedAt = Instant.now();
     return this;
+  }
+
+  private String stringOrNull(JsonElement json) {
+    return json == null || json instanceof JsonNull ? null : json.getAsString();
+  }
+
+  private Instant instantOrNull(JsonElement json) {
+    return json == null || json instanceof JsonNull ? null : Instant.parse(json.getAsString());
   }
 
   public String getId() {
@@ -58,20 +63,12 @@ public class TravisBuild {
     this.number = number;
   }
 
-  public String getStatus() {
-    return status;
+  public String getState() {
+    return state;
   }
 
-  private void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getResult() {
-    return result;
-  }
-
-  private void setResult(String result) {
-    this.result = result;
+  void setState(String state) {
+    this.state = state;
   }
 
   public Instant getStartedAt() {
@@ -88,6 +85,14 @@ public class TravisBuild {
 
   void setFinishedAt(Instant finishedAt) {
     this.finishedAt = finishedAt;
+  }
+
+  public Instant getCheckedAt() {
+    return checkedAt;
+  }
+
+  void setCheckedAt(Instant checkedAt) {
+    this.checkedAt = checkedAt;
   }
 
   public String getBranch() {
@@ -135,17 +140,11 @@ public class TravisBuild {
       if (getFinishedAt() != null) {
         map.put("finished", getFinishedAt());
         map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
-        if ("0".equals(getResult())) {
-          map.put("state", "passed");
-        } else {
-          map.put("state", "failed");
-        }
-        //map.put("state", "skipped");
+        map.put("state", state);
       } else {
         map.put("finished", "-");
         map.put("duration", Duration.between(getStartedAt(), Instant.now()));
         map.put("state", "running");
-        //map.put("state", "cancelled");
       }
     } else {
       map.put("started", "-");
@@ -184,13 +183,8 @@ public class TravisBuild {
       return this;
     }
 
-    public Builder setStatus(String status) {
-      TravisBuild.this.status = status;
-      return this;
-    }
-
-    public Builder setResult(String result) {
-      TravisBuild.this.result = result;
+    public Builder setState(String state) {
+      TravisBuild.this.state = state;
       return this;
     }
 
@@ -225,6 +219,7 @@ public class TravisBuild {
     }
 
     public TravisBuild build() {
+      TravisBuild.this.checkedAt = Instant.now();
       return TravisBuild.this;
     }
   }
