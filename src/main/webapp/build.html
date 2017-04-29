@@ -44,7 +44,7 @@
       <div id="build-info">
         {{:stateIcon}}
         <span class="info">Build #{{:number}}</span>
-        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:startedAt}}</span>
+        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:started}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
       </div>
     </script>
@@ -56,7 +56,6 @@
         <tr>
           <th>Job</th>
           <th>Started</th>
-          <th>Finished</th>
           <th>Duration</th>
           <th>OS</th>
           <th>Language</th>
@@ -67,7 +66,6 @@
           <tr class="{{:hasFailed}}" job-id="{{:id}}">
             <td class="info">{{:stateIcon}}#{{:number}}</td>
             <td class="started"><i class="fa fa-calendar" aria-hidden="true"></i>{{:started}}</td>
-            <td class="started"><i class="fa fa-flag-checkered" aria-hidden="true"></i>{{:finished}}</td>
             <td class="duration"><i class="fa fa-clock-o" aria-hidden="true"></i>{{:duration}}</td>
             <td class="os"><i class="fa fa-{{:os}}" aria-hidden="true"></i></td>
             <td class="language">{{:language}}</td>
