@@ -17,6 +17,7 @@ public class TravisBuild {
   private String result;
   private Instant startedAt;
   private Instant finishedAt;
+  private Instant lastCheck;
   private String branch;
   private String commit;
   private String commitMessage;
