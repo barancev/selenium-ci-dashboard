@@ -29,11 +29,11 @@ public class ServletBase {
     private static String formatDuration(Duration duration) {
       long seconds = duration.getSeconds();
       if (seconds < 60) {
-        return String.format("%02d sec", seconds);
+        return String.format("%d sec", seconds);
       } else if (seconds < 3600) {
-        return String.format("%02d min %02d sec", seconds / 60, seconds % 60);
+        return String.format("%d min %d sec", seconds / 60, seconds % 60);
       } else {
-        return String.format("%d hr %02d min %02d sec", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
+        return String.format("%d hr %d min %d sec", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
       }
     }
   }
