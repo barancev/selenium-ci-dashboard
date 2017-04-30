@@ -31,7 +31,7 @@
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
       <h2>Builds</h2>
       <ul id="sidebar-builds">{{for builds}}
-        <li class="{{:active}}"><a href="/build.html?id={{:id}}" title="{{:commitMessage}} by {{:commitAuthor}}">{{:stateIcon}}{{:number}}</a></li>
+        <li class="{{:active}}"><a href="/build.html?id={{:id}}" title="{{>commitMessage}} by {{:commitAuthor}} in {{:branch}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
 
