@@ -36,14 +36,16 @@
     </script>
 
     <script id="metadata-tmpl" type="text/x-jsrender">
-      <div id="build-info">
-        {{:stateIcon}}
-        <span class="info">Build #{{:number}}</span>
-        <i class="fa fa-calendar-o" aria-hidden="true"></i><span class="started">{{:started}}</span>
-        <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
+      <div id="commit-info">
         <i class="fa fa-github" aria-hidden="true"></i>
         <a href="https://github.com/SeleniumHQ/selenium/commit/{{:commit}}">{{:commitMessage}}</a>
         <span class="author">by {{:commitAuthor}}</span> in <span class="branch">{{:branch}}</span>
+      </div>
+      <div id="build-info">
+        {{:stateIcon}}
+        <span class="info">Build #{{:number}}</span>
+        <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
+        <i class="fa fa-calendar-o" aria-hidden="true"></i><span class="started">{{:started}}</span>
       </div>
     </script>
 
