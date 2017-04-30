@@ -93,8 +93,8 @@ public class TravisServlet {
       .setStartedAt(instantOrNull(json.get("started_at")))
       .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setOs(stringOrNull(config.get("os")))
-      .setLanguage(getLanguage(config))
-      .setEnv(getEnv(config))
+      .setLanguage(stringOrNull(config.get("language")))
+      .setEnv(stringOrNull(config.get("env")))
       .setAllowFailure(json.get("allow_failure").getAsBoolean())
       .build();
   }
@@ -105,14 +105,6 @@ public class TravisServlet {
 
   private Instant instantOrNull(JsonElement json) {
     return json == null || json instanceof JsonNull ? null : Instant.parse(json.getAsString());
-  }
-
-  private String getLanguage(JsonObject config) {
-    return stringOrNull(config.get("language"));
-  }
-
-  private String getEnv(JsonObject config) {
-    return config.get("env").toString();
   }
 
 }
