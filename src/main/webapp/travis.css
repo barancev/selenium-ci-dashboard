@@ -5,6 +5,7 @@ body, html {
   font-size: 14px;
   line-height: 1.45;
   font-family: "Source Sans Pro",Helvetica,sans-serif;
+  background-color: #ffffff;
 }
 
 h1, h2, h3, h4 {
@@ -102,7 +103,7 @@ td span {
 }
 
 #sidebar1 li.active {
-  background-color: #c8c8ff;
+  background-color: #f0f0f0;
 }
 
 #sidebar2, #history {
@@ -110,7 +111,7 @@ td span {
 }
 
 #sidebar2 li.active, #history li.active {
-  background-color: #d8d8ff;
+  background-color: #ffffff;
 }
 
 #content {
