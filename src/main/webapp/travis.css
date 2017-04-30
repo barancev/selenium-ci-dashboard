@@ -172,3 +172,11 @@ td span {
 .fa {
   padding: 5px;
 }
+
+.fa-check {
+  color: green;
+}
+
+.fa-times {
+  color: red;
+}
