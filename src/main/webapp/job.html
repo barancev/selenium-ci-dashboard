@@ -47,15 +47,13 @@
     </script>
 
     <script id="build-info-tmpl" type="text/x-jsrender">
-      <div id="commit-info">
-        <i class="fa fa-github" aria-hidden="true"></i>
-        <a href="https://github.com/SeleniumHQ/selenium/commit/{{:commit}}">{{:commitMessage}}</a>
-        <span class="author">by {{:commitAuthor}}</span> in <span class="branch">{{:branch}}</span>
-      </div>
       <div id="build-info">
         {{:stateIcon}}<span class="info"><a href="/build.html?id={{:id}}">Build #{{:number}}</a></span>
         <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:started}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
+        <i class="fa fa-github" aria-hidden="true"></i>
+        <a href="https://github.com/SeleniumHQ/selenium/commit/{{:commit}}">{{:commitMessage}}</a>
+        <span class="author">by {{:commitAuthor}}</span> in <span class="branch">{{:branch}}</span>
       </div>
     </script>
 
