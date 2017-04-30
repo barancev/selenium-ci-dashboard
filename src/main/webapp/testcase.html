@@ -28,14 +28,14 @@
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
       <h2>Builds</h2>
       <ul id="sidebar-builds">{{for builds}}
-        <li class="{{:active}}"><a href="/build.html?id={{:id}}" title="{{>commitMessage}} by {{:commitAuthor}} in {{:branch}}">{{:stateIcon}}{{:number}}</a></li>
+        <li class="{{:active}} {{:state}}"><a href="/build.html?id={{:id}}" title="{{>commitMessage}} by {{:commitAuthor}} in {{:branch}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
 
     <script id="sidebar-jobs-tmpl" type="text/x-jsrender">
       <h2>Jobs</h2>
       <ul id="sidebar-jobs">{{for jobs}}
-        <li class="{{:active}}"><a href="/job.html?id={{:id}}" title="{{>env}}">{{:stateIcon}}{{:number}}</a></li>
+        <li class="{{:active}} {{:state}}"><a href="/job.html?id={{:id}}" title="{{>env}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
 
