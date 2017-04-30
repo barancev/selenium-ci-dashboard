@@ -63,6 +63,7 @@ public class TestClass {
     map.put("passed", passed > 0 ? passed : "");
     map.put("failed", failed > 0 ? failed : "");
     map.put("skipped", skipped > 0 ? skipped : "");
+    map.put("total", passed + failed + skipped);
     map.put("running", running > 0 ? running : "");
     return map;
   }
