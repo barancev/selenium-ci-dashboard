@@ -34,6 +34,12 @@ public class TravisBuild {
   TravisBuild() {}
 
   TravisBuild updateFrom(JsonObject json) {
+    if (json.get("status").getAsInt() == 0) {
+      this.state = "passed";
+    } else {
+      this.state = "failed";
+      // when this.state = cancelled ?
+    }
     this.state = stringOrNull(json.get("state"));
     this.startedAt = instantOrNull(json.get("started_at"));
     this.finishedAt = instantOrNull(json.get("finished_at"));
