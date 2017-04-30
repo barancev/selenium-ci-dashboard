@@ -28,13 +28,13 @@ public class ServletBase {
 
     private static String formatDuration(Duration duration) {
       long seconds = duration.getSeconds();
-      long absSeconds = Math.abs(seconds);
-      String positive = String.format(
-        "%d:%02d:%02d",
-        absSeconds / 3600,
-        (absSeconds % 3600) / 60,
-        absSeconds % 60);
-      return seconds < 0 ? "-" + positive : positive;
+      if (seconds < 60) {
+        return String.format("%02d sec", seconds);
+      } else if (seconds < 3600) {
+        return String.format("%02d min %02d sec", seconds / 60, seconds % 60);
+      } else {
+        return String.format("%d hr %02d min %02d sec", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
+      }
     }
   }
 
