@@ -36,15 +36,15 @@ public class TravisJob {
   private TravisJob() {}
 
   TravisJob updateFrom(JsonObject json) {
-    if (json.get("state") != null) {
-      this.state = json.get("state").getAsString();
-    } else {
+    if (json.get("status") !=  null) {
       if (json.get("status").getAsInt() == 0) {
         this.state = "passed";
       } else {
         this.state = "failed";
         // when this.state = cancelled ?
       }
+    } else {
+      this.state = json.get("state").getAsString();
     }
     this.startedAt = instantOrNull(json.get("started_at"));
     this.finishedAt = instantOrNull(json.get("finished_at"));
