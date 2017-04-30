@@ -31,7 +31,7 @@
     <script id="sidebar-builds-tmpl" type="text/x-jsrender">
       <h2>Builds</h2>
       <ul id="sidebar-builds">{{for builds}}
-        <li class="{{:active}}"><a href="/build.html?id={{:id}}">{{:stateIcon}}{{:number}}</a></li>
+        <li class="{{:active}}"><a href="/build.html?id={{:id}}" title="{{:commitMessage}} by {{:commitAuthor}}">{{:stateIcon}}{{:number}}</a></li>
       {{/for}}</ul>
     </script>
 
@@ -44,7 +44,7 @@
       <div id="build-info">
         {{:stateIcon}}
         <span class="info">Build #{{:number}}</span>
-        <i class="fa fa-calendar" aria-hidden="true"></i><span class="started">{{:started}}</span>
+        <i class="fa fa-calendar-o" aria-hidden="true"></i><span class="started">{{:started}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
       </div>
     </script>
