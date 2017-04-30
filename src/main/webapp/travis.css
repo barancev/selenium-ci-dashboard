@@ -157,14 +157,18 @@ td span {
   font-family: monospace;
 }
 
-.fa {
-  padding: 5px;
+.running, .running a {
+  color: orange;
 }
 
-.fa-check {
+.passed, .passed a {
   color: green;
 }
 
-.fa-times {
+.failed, .failed a {
   color: red;
+}
+
+.fa {
+  padding: 5px;
 }
