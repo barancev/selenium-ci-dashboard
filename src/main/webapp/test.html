@@ -26,6 +26,7 @@
         <div id="metadata">
           <div id="build-metadata"></div>
           <div id="job-metadata"></div>
+          <div id="test-metadata"></div>
         </div>
         <div id="table-tests"></div>
       </div>
@@ -67,11 +68,14 @@
       </div>
     </script>
 
-    <script id="table-tests-tmpl" type="text/x-jsrender">
-      <div id="table-tests-header">
-        <h2 title="{{:name}}">{{:collapsedName}}</h2>
-        <div id="switcher"><a href="javascript:toggleFailed()" id="switcher-link">Show Failed</a></div>
+    <script id="test-info-tmpl" type="text/x-jsrender">
+      <div id="test-info">
+        {{:name}}
       </div>
+    </script>
+
+    <script id="table-tests-tmpl" type="text/x-jsrender">
+      <div id="switcher"><a href="javascript:toggleFailed()" id="switcher-link">Show Failed</a></div>
       <table>
         <thead>
         <tr>
@@ -127,6 +131,9 @@
         var jobTmpl = $.templates("#job-info-tmpl");
         job["stateIcon"] = stateIcon(job["state"]);
         $("#job-metadata").html(jobTmpl.render(job));
+
+        var testTmpl = $.templates("#test-info-tmpl");
+        $("#test-metadata").html(testTmpl.render(job["testClass"]));
 
         var testTableTmpl = $.templates("#table-tests-tmpl");
         job["testClass"]["testCases"].forEach(function(test) {
