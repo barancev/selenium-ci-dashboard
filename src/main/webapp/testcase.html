@@ -118,6 +118,7 @@
         $("#job-metadata").html(jobTmpl.render(job));
 
         var testTmpl = $.templates("#test-info-tmpl");
+        job["testClass"]["jobId"] = jobId;
         $("#test-metadata").html(testTmpl.render(job["testClass"]));
 
         var testCaseTmpl = $.templates("#testcase-info-tmpl");
