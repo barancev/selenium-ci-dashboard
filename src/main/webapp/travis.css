@@ -34,6 +34,11 @@ td {
   padding-right: 25px;
   cursor: pointer;
   vertical-align: top;
+  white-space: nowrap;
+}
+
+td.can-wrap {
+  white-space: normal;
 }
 
 td span {
