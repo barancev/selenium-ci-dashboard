@@ -70,7 +70,7 @@
 
     <script id="test-info-tmpl" type="text/x-jsrender">
       <div id="test-info">
-        {{:name}}
+        <i class="fa fa-list" aria-hidden="true"></i>{{:name}}
       </div>
     </script>
 
@@ -133,6 +133,7 @@
         $("#job-metadata").html(jobTmpl.render(job));
 
         var testTmpl = $.templates("#test-info-tmpl");
+        job["testClass"]["jobId"] = jobId;
         $("#test-metadata").html(testTmpl.render(job["testClass"]));
 
         var testTableTmpl = $.templates("#table-tests-tmpl");
