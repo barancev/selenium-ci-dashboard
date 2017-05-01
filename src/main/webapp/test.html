@@ -76,19 +76,15 @@
         <thead>
         <tr>
           <th>Test Method</th>
-          <th>State</th>
           <th>Exception</th>
           <th>Age</th>
-          <th>Duration</th>
         </tr>
         </thead>
         <tbody>{{for testCases}}
           <tr class="{{:hasFailed}}" test-case="{{:name}}">
-            <td><span>{{:name}}</span></td>
-            <td>{{:stateIcon}}</td>
-            <td><span>{{:exception}}<br/>{{:message}}</span></td>
+            <td class="{{:state}}"><span>{{:stateIcon}}{{:name}}</span></td>
+            <td class=""><span>{{:exception}}<br/>{{:message}}</span></td>
             <td><span>{{:age}}</span></td>
-            <td><span>{{:duration}}</span></td>
           </tr>
         {{/for}}</tbody>
       </table>
