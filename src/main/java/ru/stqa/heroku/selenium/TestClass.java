@@ -71,7 +71,9 @@ public class TestClass {
   public Map<String, Object> toFullJsonMap() {
     Map<String, Object> map = toMinJsonMap();
     testCases.sort(Comparator.comparing(TestRun::getId));
-    map.put("testCases", testCases.stream().map(TestRun::toJsonMap).collect(Collectors.toList()));
+    map.put("testCases", testCases.stream()
+      .sorted(Comparator.comparing(TestRun::getId))
+      .map(TestRun::toJsonMap).collect(Collectors.toList()));
     return map;
   }
 
