@@ -125,6 +125,10 @@ td span {
   border: 1px solid #e0e0e0;
 }
 
+.main-info {
+  font-size: large;
+}
+
 #table-tests-header {
   display: flex;
   margin-left: 7px;
