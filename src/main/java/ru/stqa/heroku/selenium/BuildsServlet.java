@@ -15,9 +15,7 @@ public class BuildsServlet extends ServletBase {
   public String doGet() {
     return db.inSession((session) -> {
       db.updateBuilds(session);
-      return gson().toJson(db.getTravisBuilds(session).stream()
-        .sorted(Comparator.comparing(TravisBuild::getId).reversed())
-        .map(TravisBuild::toMinJsonMap).collect(Collectors.toList()));
+      return gson().toJson(db.getTravisBuilds(session).stream().map(TravisBuild::toMinJsonMap).collect(Collectors.toList()));
     });
   }
 

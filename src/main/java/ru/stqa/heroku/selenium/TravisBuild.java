@@ -151,6 +151,7 @@ public class TravisBuild {
       if (getFinishedAt() != null) {
         map.put("finished", getFinishedAt());
         map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
+        map.put("duration_in_seconds", Duration.between(getStartedAt(), getFinishedAt()).getSeconds());
         map.put("state", state);
       } else {
         map.put("finished", "-");

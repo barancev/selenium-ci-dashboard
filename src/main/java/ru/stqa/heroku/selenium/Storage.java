@@ -80,7 +80,7 @@ public class Storage {
   }
 
   public List<TravisBuild> getTravisBuilds(Session session) {
-    return session.createQuery("from TravisBuild", TravisBuild.class).list();
+    return session.createQuery("from TravisBuild b order by b.id desc", TravisBuild.class).setMaxResults(40).list();
   }
 
   public TravisBuild getTravisBuild(Session session, String buildId) {
