@@ -167,6 +167,10 @@ td span {
   font-family: monospace;
 }
 
+#duration-history {
+  margin: 0 10px;
+}
+
 .running, .running a {
   color: orange;
 }
