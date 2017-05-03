@@ -128,16 +128,20 @@
         job["stateIcon"] = stateIcon(job["state"]);
         $("#job-metadata").html(jobTmpl.render(job));
 
-        var testTableTmpl = $.templates("#table-tests-tmpl");
-        job["testClasses"].forEach(function(test) {
-          test["stateIcon"] = stateIcon(test["state"]);
-          test["hasFailed"] = test["failed"] > 0 ? "has_failed" : "";
-        });
-        $("#table-tests").html(testTableTmpl.render({"tests": job["testClasses"]}));
+        if (job["testClasses"].length > 0) {
+          var testTableTmpl = $.templates("#table-tests-tmpl");
+          job["testClasses"].forEach(function(test) {
+            test["stateIcon"] = stateIcon(test["state"]);
+            test["hasFailed"] = test["failed"] > 0 ? "has_failed" : "";
+          });
+          $("#table-tests").html(testTableTmpl.render({"tests": job["testClasses"]}));
 
-        $("#table-tests").on("click", "tbody tr", function() {
-          window.location = "test.html?jobId=" + jobId + "&testClass=" + $(this).attr("test-class");
-        });
+          $("#table-tests").on("click", "tbody tr", function() {
+            window.location = "test.html?jobId=" + jobId + "&testClass=" + $(this).attr("test-class");
+          });
+        } else {
+          $("#table-tests").html("No tests were tracked.");
+        }
 
         var historyTmpl = $.templates("#sidebar-history-tmpl");
       });

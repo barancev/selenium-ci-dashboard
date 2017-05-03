@@ -135,17 +135,20 @@
         var testTmpl = $.templates("#test-info-tmpl");
         $("#test-metadata").html(testTmpl.render(job["testClass"]));
 
-        var testTableTmpl = $.templates("#table-tests-tmpl");
-        job["testClass"]["testCases"].forEach(function(test) {
-          test["stateIcon"] = stateIcon(test["state"]);
-          test["hasFailed"] = test["state"] == "failed" ? "has_failed" : "";
-        });
-        $("#table-tests").html(testTableTmpl.render(job["testClass"]));
+        if (job["testClass"]["testCases"].length > 0) {
+          var testTableTmpl = $.templates("#table-tests-tmpl");
+          job["testClass"]["testCases"].forEach(function(test) {
+            test["stateIcon"] = stateIcon(test["state"]);
+            test["hasFailed"] = test["state"] == "failed" ? "has_failed" : "";
+          });
+          $("#table-tests").html(testTableTmpl.render(job["testClass"]));
 
-        $("#table-tests").on("click", "tbody tr", function() {
-          window.location = "testcase.html?jobId=" + jobId + "&testClass=" + testClass + "&testCase=" + $(this).attr("test-case");
-        });
-
+          $("#table-tests").on("click", "tbody tr", function() {
+            window.location = "testcase.html?jobId=" + jobId + "&testClass=" + testClass + "&testCase=" + $(this).attr("test-case");
+          });
+        } else {
+          $("#table-tests").html("No tests were tracked.");
+        }
       });
 
       var toggleFailed = function() {
