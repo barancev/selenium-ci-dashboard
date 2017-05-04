@@ -171,6 +171,15 @@ td span {
   margin: 0 10px;
 }
 
+#duration-history rect {
+  fill-opacity: 0.3;
+  cursor: pointer;
+}
+
+#duration-history rect:hover {
+  fill-opacity: 1;
+}
+
 .running, .running a {
   color: orange;
 }
