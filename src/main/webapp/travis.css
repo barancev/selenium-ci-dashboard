@@ -204,10 +204,13 @@ td span {
   color: red;
 }
 
-.tooltip {
+.toolTip {
+  position: absolute;
   display: none;
   min-width: 80px;
   height: auto;
-  fill: #ffffff;
-  opacity: 0.5;
+  background: none repeat scroll 0 0 #ffffff;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
 }
