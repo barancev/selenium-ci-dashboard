@@ -27,7 +27,7 @@ public class JobServlet extends ServletBase {
   public String doGet(@PathParam("id") String id, @PathParam("testClass") String testClass) {
     return db.inSession((session) -> {
       db.updateBuilds(session);
-      return gson().toJson(db.getTravisJob(session, id).toFullJsonMap(testClass));
+      return gson().toJson(db.populateJobHistory(session, db.getTravisJob(session, id)).toFullJsonMap(testClass));
     });
   }
 

@@ -92,6 +92,11 @@ public class Storage {
     return session.createQuery("from TravisJob where id=:id", TravisJob.class).setParameter("id", jobId).getSingleResult();
   }
 
+  public TravisJob populateJobHistory(Session session, TravisJob job) {
+    job.setHistory(session.createQuery("from TravisJob j where j.env=:env order by j.id", TravisJob.class).setParameter("name", job.getEnv()).list());
+    return job;
+  }
+
   public void updateBuilds(Session session) {
     Instant checkPoint = Instant.now().minusSeconds(15);
     List<TravisBuild> toCheck = session.createQuery("from TravisBuild where finishedAt=null", TravisBuild.class).list()

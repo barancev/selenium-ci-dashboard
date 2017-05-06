@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 @Table(name = "jobs")
 public class TravisJob {
 
+  private static Logger log = Logger.getLogger(TravisJob.class.getName());
+
   @Id
   private String id;
   private String number;
@@ -32,6 +34,7 @@ public class TravisJob {
 
   @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
   private List<TestRun> testRuns = new ArrayList<>();
+  private List<TravisJob> history;
 
   private TravisJob() {}
 
@@ -171,6 +174,33 @@ public class TravisJob {
     return map;
   }
 
+  public Map<String, Object> toHistoryJsonMap() {
+    Map<String, Object> map = toMinJsonMap();
+    int passed = 0;
+    int failed = 0;
+    int skipped = 0;
+    for (TestRun testCase : testRuns) {
+      switch (testCase.getResult()) {
+        case "passed":
+          passed++;
+          break;
+        case "failed":
+          failed++;
+          break;
+        case "skipped":
+          skipped++;
+          break;
+        default:
+          log.info("Unknown test case result " + testCase.getResult());
+      }
+    }
+    map.put("passed", passed);
+    map.put("failed", failed);
+    map.put("skipped", skipped);
+    map.put("total", passed + failed + skipped);
+    return map;
+  }
+
   public Map<String, Object> toFullJsonMap() {
     Map<String, Object> map = toMinJsonMap();
     map.put("build", build.toFullJsonMap());
@@ -182,6 +212,7 @@ public class TravisJob {
     List<TestClass> list = Lists.newArrayList(testClasses.values());
     list.sort(Comparator.comparing(TestClass::getName));
     map.put("testClasses", list.stream().map(TestClass::toMinJsonMap).collect(Collectors.toList()));
+    map.put("history", history.stream().map(TravisJob::toHistoryJsonMap).collect(Collectors.toList()));
     return map;
   }
 
@@ -213,6 +244,10 @@ public class TravisJob {
 
   public static Builder newBuilder() {
     return new TravisJob().new Builder();
+  }
+
+  public void setHistory(List<TravisJob> history) {
+    this.history = history;
   }
 
   public class Builder {
