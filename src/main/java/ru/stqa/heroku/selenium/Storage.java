@@ -93,7 +93,7 @@ public class Storage {
   }
 
   public TravisJob populateJobHistory(Session session, TravisJob job) {
-    job.setHistory(session.createQuery("from TravisJob j where j.env=:env order by j.id", TravisJob.class).setParameter("name", job.getEnv()).list());
+    job.setHistory(session.createQuery("from TravisJob j where j.env=:env order by j.id", TravisJob.class).setParameter("env", job.getEnv()).list());
     return job;
   }
 
