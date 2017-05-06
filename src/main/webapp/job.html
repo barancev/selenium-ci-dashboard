@@ -26,6 +26,7 @@
         <div id="metadata">
           <div id="build-metadata"></div>
           <div id="job-metadata"></div>
+          <div id="current-metadata"></div>
         </div>
         <div id="table-tests"></div>
       </div>
@@ -64,6 +65,15 @@
         {{:stateIcon}}<span class="info">Job #{{:number}}</span>
         <i class="fa fa-clock-o" aria-hidden="true"></i><span class="duration">{{:duration}}</span>
         <i class="fa fa-cogs" aria-hidden="true"></i><span class="env">{{:env}}</span>
+      </div>
+      <div>
+        <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>Currently running {{:}}
+      </div>
+    </script>
+
+    <script id="current-info-tmpl" type="text/x-jsrender">
+      <div>
+        <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>Currently running {{:testClass}}.{{:name}}
       </div>
     </script>
 
@@ -127,6 +137,11 @@
         var jobTmpl = $.templates("#job-info-tmpl");
         job["stateIcon"] = stateIcon(job["state"]);
         $("#job-metadata").html(jobTmpl.render(job));
+
+        if (job["current"]) {
+          var currentTmpl = $.templates("#current-info-tmpl");
+          $("#current-metadata").html(currentTmpl.render(job["current"]));
+        }
 
         if (job["testClasses"].length > 0) {
           var testTableTmpl = $.templates("#table-tests-tmpl");

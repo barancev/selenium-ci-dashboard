@@ -206,14 +206,21 @@ public class TravisJob {
   public Map<String, Object> toFullJsonMap() {
     Map<String, Object> map = toMinJsonMap();
     map.put("build", build.toFullJsonMap());
+    TestRun current = null;
     Map<String, TestClass> testClasses = new HashMap<>();
     for (TestRun testRun : testRuns) {
+      if (testRun.getFinishedAt() == null) {
+        current = testRun;
+      }
       TestClass testClass = testClasses.computeIfAbsent(testRun.getTestClass(), k -> new TestClass(testRun.getTestClass()));
       testClass.addTestCase(testRun);
     }
     List<TestClass> list = Lists.newArrayList(testClasses.values());
     list.sort(Comparator.comparing(TestClass::getName));
     map.put("testClasses", list.stream().map(TestClass::toMinJsonMap).collect(Collectors.toList()));
+    if (current != null) {
+      map.put("current", current.toJsonMap());
+    }
     map.put("history", history.stream().map(TravisJob::toHistoryJsonMap).collect(Collectors.toList()));
     return map;
   }
