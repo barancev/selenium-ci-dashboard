@@ -34,6 +34,8 @@ public class TravisJob {
 
   @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
   private List<TestRun> testRuns = new ArrayList<>();
+
+  @Transient
   private List<TravisJob> history;
 
   private TravisJob() {}
