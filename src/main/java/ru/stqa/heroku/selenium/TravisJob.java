@@ -186,18 +186,20 @@ public class TravisJob {
     int failed = 0;
     int skipped = 0;
     for (TestRun testCase : testRuns) {
-      switch (testCase.getResult()) {
-        case "passed":
-          passed++;
-          break;
-        case "failed":
-          failed++;
-          break;
-        case "skipped":
-          skipped++;
-          break;
-        default:
-          log.info("Unknown test case result " + testCase.getResult());
+      if (testCase.getResult() != null) {
+        switch (testCase.getResult()) {
+          case "passed":
+            passed++;
+            break;
+          case "failed":
+            failed++;
+            break;
+          case "skipped":
+            skipped++;
+            break;
+          default:
+            log.info("Unknown test case result " + testCase.getResult());
+        }
       }
     }
     map.put("passed", passed);
