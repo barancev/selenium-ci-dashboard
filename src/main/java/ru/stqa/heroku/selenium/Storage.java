@@ -99,7 +99,7 @@ public class Storage {
 
   public void updateBuilds(Session session) {
     Instant checkPoint = Instant.now().minusSeconds(15);
-    List<TravisBuild> toCheck = session.createQuery("from TravisBuild where finishedAt=null", TravisBuild.class).list()
+    List<TravisBuild> toCheck = session.createQuery("from TravisBuild where finishedAt=null or state=\"running\"", TravisBuild.class).list()
       .stream().filter(build -> build.getCheckedAt().isBefore(checkPoint)).collect(Collectors.toList());
 
     if (toCheck.size() > 0) {
