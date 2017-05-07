@@ -12,7 +12,7 @@ var stateIcon = function(state) {
   } else if (state == "cancelled") {
     return '<i class="fa fa-ban" aria-hidden="true"></i>';
   } else {
-    return '<i class="fa fa-question-circle-o" aria-hidden="true" alt="'+state+'"></i>';
+    return '<i class="fa fa-question-circle-o" aria-hidden="true" title="'+state+'"></i>';
   }
 };
 
