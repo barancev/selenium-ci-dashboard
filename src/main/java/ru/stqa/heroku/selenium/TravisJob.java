@@ -42,11 +42,15 @@ public class TravisJob {
 
   TravisJob updateFrom(JsonObject json) {
     if (json.get("status") !=  null) {
-      if (json.get("status").getAsInt() == 0) {
-        this.state = "passed";
+      if (json.get("status") instanceof JsonNull) {
+        this.state = "running";
       } else {
-        this.state = "failed";
-        // when this.state = cancelled ?
+        if (json.get("status").getAsInt() == 0) {
+          this.state = "passed";
+        } else {
+          this.state = "failed";
+          // when this.state = cancelled ?
+        }
       }
     } else {
       this.state = json.get("state").getAsString();
