@@ -176,6 +176,10 @@ td span {
   cursor: pointer;
 }
 
+#duration-history rect.active {
+  fill-opacity: 0.6;
+}
+
 #duration-history rect:hover {
   fill-opacity: 1;
 }

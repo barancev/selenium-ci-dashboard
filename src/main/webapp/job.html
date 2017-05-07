@@ -173,6 +173,7 @@
         g.selectAll("rect")
           .data(data)
           .enter().append("rect")
+          .attr("class", function(d) { return d["id"] == jobId ? "active" : ""})
           .attr("x", function(d) { return x(d["id"]); })
           .attr("y", function(d) { return y(d["duration_in_seconds"]); })
           .attr("width", 18)
