@@ -160,6 +160,7 @@ public class TravisBuild {
       } else {
         map.put("finished", "-");
         map.put("duration", Duration.between(getStartedAt(), Instant.now()));
+        map.put("duration_in_seconds", Duration.between(getStartedAt(), Instant.now()).getSeconds());
         map.put("state", "running");
       }
     } else {

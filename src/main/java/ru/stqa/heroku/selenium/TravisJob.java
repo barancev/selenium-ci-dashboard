@@ -161,10 +161,12 @@ public class TravisJob {
       if (getFinishedAt() != null) {
         map.put("finished", getFinishedAt());
         map.put("duration", Duration.between(getStartedAt(), getFinishedAt()));
+        map.put("duration_in_seconds", Duration.between(getStartedAt(), getFinishedAt()).getSeconds());
         map.put("state", state);
       } else {
         map.put("finished", "-");
         map.put("duration", Duration.between(getStartedAt(), Instant.now()));
+        map.put("duration_in_seconds", Duration.between(getStartedAt(), Instant.now()).getSeconds());
         map.put("state", "running");
         //map.put("state", "cancelled");
       }
