@@ -29,8 +29,9 @@
           <div id="job-metadata"></div>
           <div id="current-metadata"></div>
         </div>
-        <div id="history">
+        <div id="job-history">
           <div id="duration-history"></div>
+          <div id="result-history"></div>
         </div>
         <div id="table-tests"></div>
       </div>
@@ -158,11 +159,12 @@
           $("#table-tests").html("No tests were tracked.");
         }
 
+        var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+        var width = data.length * 20, height = 100;
         var data = job["history"];
         var colours = { failed: 'red', passed: 'green' };
-        var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+        var colours2 = ["red", "green", "gray"]
 
-        var width = data.length * 20, height = 100;
         var g = d3.select("#duration-history").append("svg").attr("width", width).attr("height", height);
         var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
           y = d3.scaleLinear().rangeRound([height, 0]);
@@ -185,6 +187,55 @@
               .style("top", d3.event.pageY - 70 + "px")
               .style("display", "inline-block")
               .html("Job #" + d["number"] + "<br/>" + d["duration"]);
+          })
+          .on("mouseout", function(d){ tooltip.style("display", "none"); })
+          .on("click", function(d){ window.location = 'job.html?id=' + d["id"]; });
+
+        var keys = [];
+        var passed = [];
+        var failed = [];
+        var skipped = [];
+        data.forEach(function(d) {
+          keys.push(d["id"]);
+          passed.push(d["passed"]);
+          failed.push(d["failed"]);
+          skipped.push(d["skipped"]);
+        });
+        var results = d3.stack().keys(d3.range(3))(d3.transpose([passed, failed, skipped]));
+
+        var g2 = d3.select("#result-history").append("svg").attr("width", width).attr("height", height);
+        var x2 = d3.scaleBand()
+          .domain(keys)
+          .rangeRound([0, width])
+          .padding(0.1);
+
+        var y1Max = d3.max(results, function(y) { return d3.max(y, function(d) { return d[1]; }); });
+
+        var y2 = d3.scaleLinear()
+          .domain([0, y1Max])
+          .range([height, 0]);
+
+        // Create groups for each series, rects for each segment
+        var groups = g2.selectAll("g.job-result")
+          .data(results)
+          .enter().append("g")
+          .attr("class", "job-result")
+          .style("fill", function(d, i) { return colours2[i]; });
+
+        var rect = groups.selectAll("rect")
+          .data(function(d) { return d; })
+          .enter()
+          .append("rect")
+          .attr("x", function(d, i) { return x2(keys[i]); })
+          .attr("y", function(d) { return y2(d[1]); })
+          .attr("height", function(d) { return y2(d[0]) - y2(d[1]); })
+          .attr("width", x2.bandwidth())
+          .on("mousemove", function(d, i){
+            tooltip
+              .style("left", d3.event.pageX + 10 + "px")
+              .style("top", d3.event.pageY - 120 + "px")
+              .style("display", "inline-block")
+              .html("Job #" + keys[i] + "<br/>passed: " + passed[i] + "<br/>failed: " + failed[i] + "<br/>skipped: " + skipped[i]);
           })
           .on("mouseout", function(d){ tooltip.style("display", "none"); })
           .on("click", function(d){ window.location = 'job.html?id=' + d["id"]; });

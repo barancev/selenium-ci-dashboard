@@ -171,6 +171,10 @@ td span {
   margin: 0 10px;
 }
 
+#job-history {
+  display: flex;
+}
+
 #duration-history rect {
   fill-opacity: 0.3;
   cursor: pointer;
