@@ -231,3 +231,9 @@ fieldset {
 legend {
   color: #999999;
 }
+
+#no-results {
+  font-size: larger;
+  font-weight: bold;
+  margin: 0 5px;
+}
