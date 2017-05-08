@@ -180,7 +180,7 @@ td span {
   cursor: pointer;
 }
 
-#duration-history rect.active, #result-history g.job-result.active rect {
+#duration-history rect.active, #result-history g.job-result rect.active {
   fill-opacity: 0.6;
 }
 

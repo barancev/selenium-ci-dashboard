@@ -225,13 +225,14 @@
         var groups = g2.selectAll("g.job-result")
           .data(results)
           .enter().append("g")
-          .attr("class", function(d, i) { return "job-result " + (keys[i] == jobId ? "active" : "")})
+          .attr("class", function(d) { return "job-result"; })
           .style("fill", function(d, i) { return colours2[i]; });
 
         var rect = groups.selectAll("rect")
           .data(function(d) { return d; })
           .enter()
           .append("rect")
+          .attr("class", function(d, i) { return keys[i] == jobId ? "active" : ""; })
           .attr("x", function(d, i) { return x2(keys[i]); })
           .attr("y", function(d) { return y2(d[1]); })
           .attr("height", function(d) { return y2(d[0]) - y2(d[1]); })
