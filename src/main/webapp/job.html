@@ -219,8 +219,7 @@
         var groups = g2.selectAll("g.job-result")
           .data(results)
           .enter().append("g")
-          .attr("class", "job-result")
-          .attr("class", function(d, i) { return keys[i] == jobId ? "active" : ""})
+          .attr("class", function(d, i) { return "job-result " + (keys[i] == jobId ? "active" : "")})
           .style("fill", function(d, i) { return colours2[i]; });
 
         var rect = groups.selectAll("rect")
