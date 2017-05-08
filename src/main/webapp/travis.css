@@ -175,16 +175,16 @@ td span {
   display: flex;
 }
 
-#duration-history rect {
+#duration-history rect, #result-history g.job-result {
   fill-opacity: 0.3;
   cursor: pointer;
 }
 
-#duration-history rect.active {
+#duration-history rect.active, #result-history g.job-result.active {
   fill-opacity: 0.6;
 }
 
-#duration-history rect:hover {
+#duration-history rect:hover, #result-history g.job-result:hover {
   fill-opacity: 1;
 }
 

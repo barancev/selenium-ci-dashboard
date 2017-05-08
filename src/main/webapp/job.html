@@ -178,7 +178,7 @@
           .attr("class", function(d) { return d["id"] == jobId ? "active" : ""})
           .attr("x", function(d) { return x(d["id"]); })
           .attr("y", function(d) { return y(d["duration_in_seconds"]); })
-          .attr("width", 18)
+          .attr("width", x.bandwidth())
           .attr("height", function(d) { return height - y(d["duration_in_seconds"]); })
           .attr("fill", function(d) { return colours[d["state"]]; })
           .on("mousemove", function(d){
@@ -220,6 +220,7 @@
           .data(results)
           .enter().append("g")
           .attr("class", "job-result")
+          .attr("class", function(d, i) { return keys[i] == jobId ? "active" : ""})
           .style("fill", function(d, i) { return colours2[i]; });
 
         var rect = groups.selectAll("rect")
@@ -238,7 +239,7 @@
               .html("Job #" + keys[i] + "<br/>passed: " + passed[i] + "<br/>failed: " + failed[i] + "<br/>skipped: " + skipped[i]);
           })
           .on("mouseout", function(d){ tooltip.style("display", "none"); })
-          .on("click", function(d){ window.location = 'job.html?id=' + d["id"]; });
+          .on("click", function(d, i){ window.location = 'job.html?id=' + keys[i]; });
       });
 
       var toggleFailed = function() {
