@@ -111,11 +111,11 @@ td span {
   background-color: #f0f0f0;
 }
 
-#sidebar2, #history {
+#sidebar2 {
   background-color: #f0f0f0;
 }
 
-#sidebar2 li.active, #history li.active {
+#sidebar2 li.active {
   background-color: #ffffff;
 }
 
@@ -218,7 +218,15 @@ td span {
   min-width: 80px;
   height: auto;
   background: none repeat scroll 0 0 #ffffff;
-  border: 1px solid #6F257F;
+  border: 1px solid #e8e8e8;
   padding: 14px;
   text-align: center;
+}
+
+fieldset {
+  border: 1px solid #e8e8e8;
+}
+
+legend {
+  color: #999999;
 }
