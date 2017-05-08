@@ -4,6 +4,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.84/jsrender.min.js"></script>
     <script src="//use.fontawesome.com/c938e2358b.js"></script>
+    <script src="//d3js.org/d3.v4.min.js"></script>
     <script src="travis.js"></script>
     <script type="application/javascript">
       $.fn.extend({
@@ -24,6 +25,7 @@
       </div>
       <div id="content">
         <div id="metadata"></div>
+        <div id="duration-history"></div>
         <div id="table-jobs"></div>
       </div>
     </div>
@@ -98,6 +100,37 @@
         $("#table-jobs").html(jobTableTmpl.render(data));
 
       });
+
+      var colours = { failed: 'red', passed: 'green' };
+      var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+      var width = data.length * 20, height = 100;
+      var g = d3.select("#duration-history").append("svg").attr("width", width).attr("height", height);
+      var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+
+      var reversed = data.slice().reverse();
+      x.domain(reversed.map(function(d) { return d["id"]; }));
+      y.domain([0, d3.max(reversed, function(d) { return d["duration_in_seconds"]; })]);
+
+      g.selectAll("rect")
+        .data(reversed)
+        .enter().append("rect")
+        .attr("class", function(d) { return d["id"] == buildId ? "active" : ""})
+        .attr("x", function(d) { return x(d["id"]); })
+        .attr("y", function(d) { return y(d["duration_in_seconds"]); })
+        .attr("width", 18)
+        .attr("height", function(d) { return height - y(d["duration_in_seconds"]); })
+        .attr("fill", function(d) { return colours[d["state"]]; })
+        .on("mousemove", function(d){
+          tooltip
+            .style("left", d3.event.pageX + 10 + "px")
+            .style("top", d3.event.pageY - 70 + "px")
+            .style("display", "inline-block")
+            .html("Build #" + d["number"] + "<br/>" + d["duration"]);
+        })
+        .on("mouseout", function(d){ tooltip.style("display", "none"); })
+        .on("click", function(d){ window.location = 'build.html?id=' + d["id"]; });
 
       $("#table-jobs").on("click", "tbody tr", function() {
         window.location = "job.html?id=" + $(this).attr("job-id");
