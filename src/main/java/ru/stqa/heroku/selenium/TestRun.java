@@ -128,6 +128,7 @@ public class TestRun {
     Map<String, Object> map = new HashMap<>();
     map.put("name", getTestCase());
     map.put("testClass", getTestClass());
+    map.put("collapsedTestClass", TestClass.collapse(getTestClass()));
     if (getStartedAt() != null) {
       map.put("started", getStartedAt());
       if (getFinishedAt() != null) {

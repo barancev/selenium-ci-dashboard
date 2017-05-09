@@ -45,7 +45,7 @@ public class TestClass {
     }
   }
 
-  private String collapse(String fullName) {
+  static String collapse(String fullName) {
     return Arrays.stream(fullName.split("\\."))
       .reduce(new ArrayList<String>(),
         (list, element) -> {
