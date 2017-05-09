@@ -127,6 +127,7 @@ public class TestRun {
   public Map<String, Object> toJsonMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("name", getTestCase());
+    map.put("testClass", getTestClass());
     if (getStartedAt() != null) {
       map.put("started", getStartedAt());
       if (getFinishedAt() != null) {
