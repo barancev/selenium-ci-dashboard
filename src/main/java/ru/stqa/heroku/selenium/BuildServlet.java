@@ -9,13 +9,11 @@ import javax.ws.rs.core.MediaType;
 @Path("build")
 public class BuildServlet extends ServletBase {
 
-  private HibernateStorage db = HibernateStorage.getInstance();
-
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id) {
-    return db.inSession((session) -> {
+    return Storage.getInstance().inSession((session) -> {
       session.updateBuilds();
       return gson().toJson(session.getTravisBuild(id).toFullJsonMap());
     });

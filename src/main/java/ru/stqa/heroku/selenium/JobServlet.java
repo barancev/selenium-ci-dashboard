@@ -9,13 +9,11 @@ import javax.ws.rs.core.MediaType;
 @Path("job")
 public class JobServlet extends ServletBase {
 
-  private HibernateStorage db = HibernateStorage.getInstance();
-
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id) {
-    return db.inSession((session) -> {
+    return Storage.getInstance().inSession((session) -> {
       session.updateBuilds();
       return gson().toJson(session.populateJobHistory(session.getTravisJob(id)).toFullJsonMap());
     });
@@ -25,7 +23,7 @@ public class JobServlet extends ServletBase {
   @Path("{id}/{testClass}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id, @PathParam("testClass") String testClass) {
-    return db.inSession((session) -> {
+    return Storage.getInstance().inSession((session) -> {
       session.updateBuilds();
       return gson().toJson(session.getTravisJob(id).toFullJsonMap(testClass));
     });
@@ -35,7 +33,7 @@ public class JobServlet extends ServletBase {
   @Path("{id}/{testClass}/{testCase}")
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet(@PathParam("id") String id, @PathParam("testClass") String testClass, @PathParam("testCase") String testCase) {
-    return db.inSession((session) -> {
+    return Storage.getInstance().inSession((session) -> {
       session.updateBuilds();
       return gson().toJson(session.getTravisJob(id).toFullJsonMap(testClass, testCase));
     });

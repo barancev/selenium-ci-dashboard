@@ -42,6 +42,7 @@ public class HibernateStorage implements Storage {
     sessionFactory = configuration.buildSessionFactory();
   }
 
+  @Override
   public <R> R inSession(Function<StorageSession, R> run) {
     try (Session session = sessionFactory.openSession()) {
       return run.apply(new HibernateSession(session));

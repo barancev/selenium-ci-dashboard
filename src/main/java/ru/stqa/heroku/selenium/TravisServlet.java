@@ -23,8 +23,6 @@ public class TravisServlet {
 
   private static Logger log = Logger.getLogger(TravisServlet.class.getName());
 
-  private HibernateStorage db = HibernateStorage.getInstance();
-
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public void doPost(@FormParam("payload") String payload) {
@@ -35,7 +33,7 @@ public class TravisServlet {
       return;
     }
     String buildId = json.get("id").getAsString();
-    db.inSession((session) -> {
+    Storage.getInstance().inSession((session) -> {
       TravisBuild build = session.getTravisBuild(buildId);
       session.beginTransaction();
       if (build == null) {

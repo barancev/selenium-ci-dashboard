@@ -12,13 +12,11 @@ import java.time.Instant;
 @Path("testrun")
 public class TestRunServlet {
 
-  private HibernateStorage db = HibernateStorage.getInstance();
-
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String doPost(String payload) {
-    return db.inSession((session) -> {
+    return Storage.getInstance().inSession((session) -> {
       session.beginTransaction();
       JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
       TestRun test = jsonToTestRun(json);
