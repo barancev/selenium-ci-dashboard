@@ -23,7 +23,7 @@ public class TravisServlet {
 
   private static Logger log = Logger.getLogger(TravisServlet.class.getName());
 
-  private Storage db = Storage.getInstance();
+  private HibernateStorage db = HibernateStorage.getInstance();
 
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -36,7 +36,7 @@ public class TravisServlet {
     }
     String buildId = json.get("id").getAsString();
     db.inSession((session) -> {
-      TravisBuild build = db.getTravisBuild(session, buildId);
+      TravisBuild build = session.getTravisBuild(buildId);
       session.beginTransaction();
       if (build == null) {
         build = jsonToTravisBuild(json);
@@ -49,7 +49,7 @@ public class TravisServlet {
         Map<String, JsonObject> jobObjects = getJobObjects(json);
         build.getJobs().forEach(job -> job.updateFrom(jobObjects.get(job.getId())));
       }
-      session.getTransaction().commit();
+      session.commitTransaction();
       return null;
     });
   }

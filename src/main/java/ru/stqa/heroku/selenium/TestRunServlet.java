@@ -12,7 +12,7 @@ import java.time.Instant;
 @Path("testrun")
 public class TestRunServlet {
 
-  private Storage db = Storage.getInstance();
+  private HibernateStorage db = HibernateStorage.getInstance();
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -23,9 +23,9 @@ public class TestRunServlet {
       JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
       TestRun test = jsonToTestRun(json);
       String jobId = stringOrNull(json.get("job_id"));
-      test.setJob(jobId !=  null ? db.getTravisJob(session, jobId) : null);
-      String result = db.store(test, session).toString();
-      session.getTransaction().commit();
+      test.setJob(jobId !=  null ? session.getTravisJob(jobId) : null);
+      String result = session.store(test).toString();
+      session.commitTransaction();
       return result;
     });
   }

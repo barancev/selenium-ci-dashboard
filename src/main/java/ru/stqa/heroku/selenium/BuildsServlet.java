@@ -2,20 +2,19 @@ package ru.stqa.heroku.selenium;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Path("builds")
 public class BuildsServlet extends ServletBase {
 
-  private Storage db = Storage.getInstance();
+  private HibernateStorage db = HibernateStorage.getInstance();
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public String doGet() {
     return db.inSession((session) -> {
-      db.updateBuilds(session);
-      return gson().toJson(db.getTravisBuilds(session).stream().map(TravisBuild::toMinJsonMap).collect(Collectors.toList()));
+      session.updateBuilds();
+      return gson().toJson(session.getTravisBuilds().stream().map(TravisBuild::toMinJsonMap).collect(Collectors.toList()));
     });
   }
 
