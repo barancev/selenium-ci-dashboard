@@ -1,14 +1,15 @@
 package ru.stqa.heroku.selenium;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.stqa.heroku.selenium.JsonUtils.instantOrNull;
 
 @Entity
 @Table(name = "builds")
@@ -33,12 +34,12 @@ public class TravisBuild {
 
   TravisBuild() {}
 
-  TravisBuild updateFrom(JsonObject json) {
+  TravisBuild updateFrom(JsonNode json) {
     if (json.get("status") !=  null) {
-      if (json.get("status") instanceof JsonNull) {
+      if (json.get("status") instanceof NullNode) {
         this.state = "running";
       } else {
-        if (json.get("status").getAsInt() == 0) {
+        if (json.get("status").asInt() == 0) {
           this.state = "passed";
         } else {
           this.state = "failed";
@@ -46,20 +47,12 @@ public class TravisBuild {
         }
       }
     } else {
-      this.state = json.get("state").getAsString();
+      this.state = json.get("state").asText();
     }
     this.startedAt = instantOrNull(json.get("started_at"));
     this.finishedAt = instantOrNull(json.get("finished_at"));
     this.checkedAt = Instant.now();
     return this;
-  }
-
-  private String stringOrNull(JsonElement json) {
-    return json == null || json instanceof JsonNull ? null : json.getAsString();
-  }
-
-  private Instant instantOrNull(JsonElement json) {
-    return json == null || json instanceof JsonNull ? null : Instant.parse(json.getAsString());
   }
 
   public String getId() {

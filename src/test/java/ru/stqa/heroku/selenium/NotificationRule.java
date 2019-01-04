@@ -1,6 +1,6 @@
 package ru.stqa.heroku.selenium;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -106,7 +106,7 @@ public class NotificationRule extends TestWatcher {
       CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpPost httpPost = new HttpPost(notificationUrl);
       httpPost.setHeader("Content-Type", "application/json");
-      httpPost.setEntity(new StringEntity(new Gson().toJson(map)));
+      httpPost.setEntity(new StringEntity(new ObjectMapper().writeValueAsString(map)));
       CloseableHttpResponse response = httpClient.execute(httpPost);
       String body = EntityUtils.toString(response.getEntity());
       return Long.parseLong(body);

@@ -1,22 +1,23 @@
 package ru.stqa.heroku.selenium;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-import java.time.Instant;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static ru.stqa.heroku.selenium.JsonUtils.stringOrNull;
+import static ru.stqa.heroku.selenium.JsonUtils.instantOrNull;
 
 @Path("travis")
 public class TravisServlet {
@@ -25,14 +26,14 @@ public class TravisServlet {
 
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public void doPost(@FormParam("payload") String payload) {
+  public void doPost(@FormParam("payload") String payload) throws IOException {
     log.info(payload);
-    JsonObject json = new JsonParser().parse(payload).getAsJsonObject();
-    if (json.get("pull_request").getAsBoolean()) {
+    JsonNode json = new ObjectMapper().readTree(payload);
+    if (json.get("pull_request").asBoolean()) {
       // don't track pull requests
       return;
     }
-    String buildId = json.get("id").getAsString();
+    String buildId = json.get("id").asText();
     Storage.getInstance().inSession((session) -> {
       TravisBuild build = session.getTravisBuild(buildId);
       session.beginTransaction();
@@ -44,7 +45,7 @@ public class TravisServlet {
 
       } else {
         session.save(build.updateFrom(json));
-        Map<String, JsonObject> jobObjects = getJobObjects(json);
+        Map<String, JsonNode> jobObjects = getJobObjects(json);
         build.getJobs().forEach(job -> job.updateFrom(jobObjects.get(job.getId())));
       }
       session.commitTransaction();
@@ -52,19 +53,17 @@ public class TravisServlet {
     });
   }
 
-  private Map<String,JsonObject> getJobObjects(JsonObject json) {
-    Map<String,JsonObject> map = new HashMap<>();
-    for (JsonElement jobElement : json.get("matrix").getAsJsonArray()) {
-      JsonObject jobObject = jobElement.getAsJsonObject();
-      map.put(jobObject.get("id").getAsString(), jobObject);
-    }
+  private Map<String,JsonNode> getJobObjects(JsonNode json) {
+    Map<String,JsonNode> map = new HashMap<>();
+    StreamSupport.stream(json.get("matrix").spliterator(), false)
+      .forEach(jobObject -> map.put(jobObject.get("id").asText(), jobObject));
     return map;
   }
 
-  private TravisBuild jsonToTravisBuild(JsonObject json) {
+  private TravisBuild jsonToTravisBuild(JsonNode json) {
     return TravisBuild.newBuilder()
-      .setId(json.get("id").getAsString())
-      .setNumber(json.get("number").getAsString())
+      .setId(json.get("id").asText())
+      .setNumber(json.get("number").asText())
       .setState(stringOrNull(json.get("status")))
       .setStartedAt(instantOrNull(json.get("started_at")))
       .setFinishedAt(instantOrNull(json.get("finished_at")))
@@ -75,34 +74,24 @@ public class TravisServlet {
       .build();
   }
 
-  private List<TravisJob> jsonToTravisJobs(JsonObject json, TravisBuild build) {
-    return StreamSupport.stream(json.get("matrix").getAsJsonArray().spliterator(), false)
+  private List<TravisJob> jsonToTravisJobs(JsonNode json, TravisBuild build) {
+    return StreamSupport.stream(json.get("matrix").spliterator(), false)
       .map((job) -> jsonToTravisJob(job, build)).collect(Collectors.toList());
   }
 
-  private TravisJob jsonToTravisJob(JsonElement jsonElement, TravisBuild build) {
-    JsonObject json = jsonElement.getAsJsonObject();
-    JsonObject config = json.get("config").getAsJsonObject();
+  private TravisJob jsonToTravisJob(JsonNode json, TravisBuild build) {
+    JsonNode config = json.get("config");
     return TravisJob.newBuilder()
       .setBuild(build)
-      .setId(json.get("id").getAsString())
-      .setNumber(json.get("number").getAsString())
+      .setId(json.get("id").asText())
+      .setNumber(json.get("number").asText())
       .setState(stringOrNull(json.get("status")))
       .setStartedAt(instantOrNull(json.get("started_at")))
       .setFinishedAt(instantOrNull(json.get("finished_at")))
       .setOs(stringOrNull(config.get("os")))
       .setLanguage(stringOrNull(config.get("language")))
       .setEnv(stringOrNull(config.get("env")))
-      .setAllowFailure(json.get("allow_failure").getAsBoolean())
+      .setAllowFailure(json.get("allow_failure").asBoolean())
       .build();
   }
-
-  private String stringOrNull(JsonElement json) {
-    return json == null || json instanceof JsonNull ? null : json.getAsString();
-  }
-
-  private Instant instantOrNull(JsonElement json) {
-    return json == null || json instanceof JsonNull ? null : Instant.parse(json.getAsString());
-  }
-
 }

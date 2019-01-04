@@ -1,8 +1,7 @@
 package ru.stqa.heroku.selenium;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class HibernateSession implements StorageSession {
 
@@ -83,16 +83,15 @@ public class HibernateSession implements StorageSession {
           String body = EntityUtils.toString(response.getEntity());
           log.info(body);
 
-          JsonObject json = new JsonParser().parse(body).getAsJsonObject();
+          JsonNode json = new ObjectMapper().readTree(body);
           build.updateFrom(json);
           session.save(build);
 
-          for (JsonElement jobElement : json.get("jobs").getAsJsonArray()) {
-            JsonObject jobObject = jobElement.getAsJsonObject();
-            TravisJob job = getTravisJob(jobObject.get("id").getAsString());
+          StreamSupport.stream(json.get("jobs").spliterator(), false).forEach(jobObject -> {
+            TravisJob job = getTravisJob(jobObject.get("id").asText());
             job.updateFrom(jobObject);
             session.save(job);
-          }
+          });
         } catch (IOException e) {
           log.log(Level.WARNING, e.getMessage(), e);
         }
