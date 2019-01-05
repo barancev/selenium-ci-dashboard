@@ -12,6 +12,7 @@ public class Start {
     }
 
     Server server = new Server(Integer.valueOf(webPort));
+    server.start();
 
     String webappDirLocation = "src/main/webapp/";
     QuickStartWebApp root = new QuickStartWebApp();
